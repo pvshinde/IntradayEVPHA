@@ -7,18 +7,18 @@ using Ipopt
 function main()
     pb = build_simpleexampleEV()
 
-    hist=OrderedDict{Symbol, Any}(
-        :approxsol => [1.75  1.0  1.0
-        1.75  2.5  2.0
-        1.75  2.5  2.99995]
-    )
+    # hist=OrderedDict{Symbol, Any}(
+    #     :approxsol => [1.75  1.0  1.0
+    #     1.75  2.5  2.0
+    #     1.75  2.5  2.99995]
+    # )
 
     println("Full problem is:")
     println(pb)
 
     #########################################################
     ## Problem solve: build and solve complete problem, exponential in constraints
-    y_direct = solve_direct(pb, optimizer = GLPK.Optimizer)
+    y_direct = solve_direct(pb, optimizer = Ipopt.Optimizer)
     println("\nDirect solve output is:")
     display(y_direct)
     println("")
