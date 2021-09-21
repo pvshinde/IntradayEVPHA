@@ -1,12 +1,13 @@
 using Distributed
 @everywhere using JuMP, RandomizedProgressiveHedging
 
-include("simple_trialEV.jl")
-using Ipopt
+# include("simple_trialEV.jl")
+include("buildID_EV.jl")
+using Xpress
 
 function main()
     pb = build_simpleexampleEV()
-
+    #
     # hist=OrderedDict{Symbol, Any}(
     #     :approxsol => [1.75  1.0  1.0
     #     1.75  2.5  2.0
@@ -18,7 +19,7 @@ function main()
 
     #########################################################
     ## Problem solve: build and solve complete problem, exponential in constraints
-    y_direct = solve_direct(pb, optimizer = Ipopt.Optimizer)
+    y_direct = solve_direct(pb, optimizer = Xpress.Optimizer)
     println("\nDirect solve output is:")
     display(y_direct)
     println("")

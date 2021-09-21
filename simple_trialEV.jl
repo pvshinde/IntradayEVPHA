@@ -1,6 +1,6 @@
 using Distributed
 using DataStructures, LinearAlgebra
-using RandomizedProgressiveHedging, JuMP
+@everywhere using RandomizedProgressiveHedging, JuMP
 @everywhere const RPH = RandomizedProgressiveHedging
 #
 # @everywhere struct PriceScenarios <: RPH.AbstractScenario
