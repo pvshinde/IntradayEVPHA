@@ -166,25 +166,14 @@ end
 function build_simpleexampleEV()
         #########################################################
     ## Problem definition
-        Tf = 3
-        Df = 4 # no. of time slots (Delivery products)
-        Nf = 2 # no. of car cluster
-        In = 4 # no. of cars
-        Mn = 3 # no. of reservations
-#assuming three ID stages will correspond to 4 scenarios if nbranching=2, one BM stage
-# scenario1 = PriceScenarios([3 4 6; 3 4 6; 3 4 6; 3 4 6], [2 2 1; 2 2 1; 2 2 1; 2 2 1],
-# [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3], [2 2; 1 0; 2 2],
-# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[4 3; 3 4; 4 2]) #IDpriceA, B, Upreg, Dnreg, SoCinit, Q, d0, DD
-# scenario2 = PriceScenarios([3 5 7; 3 5 7; 3 5 7; 3 5 7], [2 2 1; 2 2 1; 2 2 1; 2 2 1],
-# [2, 4, 4, 3], [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
-# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2]) # SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
-# scenario3 = PriceScenarios([4 3 6; 4 3 6; 4 3 6; 4 3 6], [3 2 3; 3 2 3; 3 2 3; 3 2 3],
-# [2, 4, 4, 3], [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
-# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2])
-# scenario4 = PriceScenarios([4 3 8; 4 3 8; 4 3 8; 4 3 8], [3 2 4; 3 2 4; 3 2 4; 3 2 4],
-# [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
-# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2])
+    Tf = 3 # no. of stages
+    Wf = 4 # this not really a scenario in this case. It is just like any other index for example dams.
 
+    Df = 1 # no. of time slots (Delivery products)
+    Nf = 2 # no. of car cluster
+    In = 3 # no. of cars
+    Mn = 3 # no. of reservations
+#assuming three ID stages will correspond to 4 scenarios if nbranching=2, one BM stage
 scenario1 = PriceScenariosp(lambda_A[1:3,1:4], lambda_D[1:3,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
 lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4], SoC_init[1:3,1:2,1], Q[1:3,1:2,1], d0[1:3,1:2,1], DD[1:3,1:2,1])
 #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
@@ -211,7 +200,7 @@ lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4], SoC_init[1:3,1:2,4], Q[1:3,1:2,4], d0[1:3
     # dim_to_subspace = [1:8, 9:16, 17:44]
     # dim_to_subspace = [1:8, 9:16, 17:120]
     # dim_to_subspace = [1:8, 9:16, 17:Tf*Df*2+Df*5+In*Nf*Df*2+In*Nf*Mn*2]
-    dim_to_subspace = [1:8, 9:16, 17:59]
+    dim_to_subspace = [1:8, 9:16, 17:Tf*Df*2+Df*5+In*Nf*Df*2+In*Nf*Mn*2]
 
     custom_nscenarios = 4
     custom_nstages =3

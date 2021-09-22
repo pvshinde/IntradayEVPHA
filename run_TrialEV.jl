@@ -19,10 +19,11 @@ function main()
 
     #########################################################
     ## Problem solve: build and solve complete problem, exponential in constraints
-    y_direct = solve_direct(pb, optimizer = Xpress.Optimizer)
+    global y_direct = solve_direct(pb, optimizer = Xpress.Optimizer)
     println("\nDirect solve output is:")
     display(y_direct)
     println("")
+
     #
     # #########################################################
     # ## Problem solve: classical PH algo, as in Ruszczynski book, p. 203
@@ -52,5 +53,34 @@ function main()
 
     return
 end
+Tf=3
+Df=1
+Nf = 2 # no. of car cluster
+In = 3 # no. of cars
+Mn = 3 # no. of reservations
+n_scen=4
+pA_val= zeros(n_scen,Tf*Df)
+pB_val= zeros(n_scen,Tf*Df)
+pU_val= zeros(n_scen,Df)
+pD_val= zeros(n_scen,Df)
+pC_val= zeros(n_scen,Df)
+pIp_val= zeros(n_scen,Df)
+pIm_val= zeros(n_scen,Df)
+p_charge=zeros(In*Nf*Df)
+SoC=zeros(In*Nf*Df)
+y=zeros(In*Nf*Mn)
+a=zeros(In*Nf*Mn)
+
+pA_val= y_direct[:,1:Tf*Df]
+pB_val= y_direct[:,Tf*Df+1:Tf*Df*2]
+pU_val= y_direct[:,Tf*Df*2+1:Tf*Df*2+Df]
+pD_val= y_direct[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df]
+pC_val= y_direct[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df]
+pIp_val= y_direct[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df]
+pIm_val= y_direct[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df]
+p_charge=y_direct[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Nf*Df]
+SoC=y_direct[:,Tf*Df*2+5*Df+In*Nf*Df+1:Tf*Df*2+5*Df+In*Nf*Df*2]
+y=y_direct[:,Tf*Df*2+5*Df+In*Nf*Df*2+1:Tf*Df*2+5*Df+In*Nf*Df*2+In*Nf*Mn]
+a=y_direct[:,Tf*Df*2+5*Df+In*Nf*Df*2+In*Nf*Mn+1:Tf*Df*2+5*Df+In*Nf*Df*2+In*Nf*Mn*2]
 
 main()
