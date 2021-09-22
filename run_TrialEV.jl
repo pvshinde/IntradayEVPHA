@@ -2,7 +2,7 @@ using Distributed
 @everywhere using JuMP, RandomizedProgressiveHedging
 
 # include("simple_trialEV.jl")
-include("buildID_EV.jl")
+include("build_priceEV.jl")
 using Xpress
 
 function main()

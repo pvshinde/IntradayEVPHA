@@ -1,23 +1,23 @@
 using Distributed
 using DataStructures, LinearAlgebra
 using RandomizedProgressiveHedging, JuMP
-using Revise
+# using Revise
 @everywhere const RPH = RandomizedProgressiveHedging
 
-@everywhere struct PriceScenarios <: RPH.AbstractScenario
+@everywhere struct PriceScenariosp <: RPH.AbstractScenario
     ID_ask_price::Matrix{Float64}
     ID_buy_price::Matrix{Float64}
-    Im_price::Vector{Float64}
-    Ip_price::Vector{Float64}
-    Up_price::Vector{Float64}
-    Dn_price::Vector{Float64}
+    Up_price::Matrix{Float64}
+    Dn_price::Matrix{Float64}
+    Im_price::Matrix{Float64}
+    Ip_price::Matrix{Float64}
     Init_SoC::Matrix{Float64}
     Q::Matrix{Float64}
     d0::Matrix{Float64}
     DD::Matrix{Float64}
 end
 
-@everywhere function build_fs_CsEV!(model::JuMP.Model, s::PriceScenarios, id_scen::ScenarioId)
+@everywhere function build_fs_CsEV!(model::JuMP.Model, s::PriceScenariosp, id_scen::ScenarioId)
     # n = length(s.trajcenter)
     Tf = 3 # no. of stages
     Wf = 4 # this not really a scenario in this case. It is just like any other index for example dams.
@@ -41,7 +41,7 @@ end
     delta_d = 1 #time step
     # Q = ones(Mn, Nf) #reserved battery level of reservation m in cluster n scenario w (3D)
     Tleave = [24, 24, 24, 24]
-    epsilon = 5
+    epsilon = 0.01
     pi_w = 0.05 # probability of scenarios
 
     # lambda_Im = zeros(Wf, Df)
@@ -61,8 +61,8 @@ end
     # cI = @variable(model, [1:Wf, 1:Df], base_name="cI$id_scen")
     pcharge = @variable(model, [1:In, 1:Nf, 1:Df], base_name="pch$id_scen")
     SoC = @variable(model, [1:In, 1:Nf, 1:Df], base_name="SoC$id_scen")
-    y = @variable(model, [1:In, 1:Nf, 1:Mn], base_name="y$id_scen", Bin) #binary
-    a = @variable(model, [1:In, 1:Nf, 1:Mn], base_name="a$id_scen", Bin) #binary
+    y = @variable(model, [1:In, 1:Nf, 1:Mn], base_name="y$id_scen") #binary
+    a = @variable(model, [1:In, 1:Nf, 1:Mn], base_name="a$id_scen") #binary
 
     @constraint(model, pcharge .>= 0)
     @constraint(model, SoC .>= 0)
@@ -73,8 +73,8 @@ end
     @constraint(model, pIp .>= 0)
     @constraint(model, pIm .>= 0)
 
-    objexpr = sum(sum(pA[t, d]*s.ID_ask_price[t,d] - pB[t, d]*s.ID_buy_price[t,d] for t in Tf) for d in Df)
-                + sum(pD[d] * s.Up_price[d] - pU[d] * s.Dn_price[d] + pIm[d]*s.Im_price[d] - pIp[d]*s.Ip_price[d] +
+    objexpr = sum(sum(pB[t, d]*s.ID_buy_price[t,d] - pA[t, d]*s.ID_ask_price[t,d] for t in Tf) for d in Df)
+                + sum(pD[d] * s.Up_price[d] - pU[d] * s.Dn_price[d] - pIm[d]*s.Im_price[d] + pIp[d]*s.Ip_price[d] +
                 (pIp[d] + pIm[d]) * lambda_f for d in Df)
 
     @constraint(model, [d=1:Df], pIp[d] - pIm[d] == sum(pA[t,d] - pB[t,d] for t in 1:Tf) + pD[d] -pU[d] -pC[d])
@@ -165,7 +165,6 @@ end
 
 function build_simpleexampleEV()
         #########################################################
-
     ## Problem definition
         Tf = 3
         Df = 4 # no. of time slots (Delivery products)
@@ -173,18 +172,31 @@ function build_simpleexampleEV()
         In = 4 # no. of cars
         Mn = 3 # no. of reservations
 #assuming three ID stages will correspond to 4 scenarios if nbranching=2, one BM stage
-    scenario1 = PriceScenarios([3 4 6; 3 4 6; 3 4 6; 3 4 6], [2 2 1; 2 2 1; 2 2 1; 2 2 1],
-    [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3], [2 2; 1 0; 2 2],
-    [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[4 3; 3 4; 4 2]) #IDpriceA, B, Upreg, Dnreg, SoCinit, Q, d0, DD
-    scenario2 = PriceScenarios([3 5 7; 3 5 7; 3 5 7; 3 5 7], [2 2 1; 2 2 1; 2 2 1; 2 2 1],
-    [2, 4, 4, 3], [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
-    [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2]) # SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
-    scenario3 = PriceScenarios([4 3 6; 4 3 6; 4 3 6; 4 3 6], [3 2 3; 3 2 3; 3 2 3; 3 2 3],
-    [2, 4, 4, 3], [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
-    [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2])
-    scenario4 = PriceScenarios([4 3 8; 4 3 8; 4 3 8; 4 3 8], [3 2 4; 3 2 4; 3 2 4; 3 2 4],
-    [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
-    [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2])
+# scenario1 = PriceScenarios([3 4 6; 3 4 6; 3 4 6; 3 4 6], [2 2 1; 2 2 1; 2 2 1; 2 2 1],
+# [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3], [2 2; 1 0; 2 2],
+# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[4 3; 3 4; 4 2]) #IDpriceA, B, Upreg, Dnreg, SoCinit, Q, d0, DD
+# scenario2 = PriceScenarios([3 5 7; 3 5 7; 3 5 7; 3 5 7], [2 2 1; 2 2 1; 2 2 1; 2 2 1],
+# [2, 4, 4, 3], [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
+# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2]) # SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
+# scenario3 = PriceScenarios([4 3 6; 4 3 6; 4 3 6; 4 3 6], [3 2 3; 3 2 3; 3 2 3; 3 2 3],
+# [2, 4, 4, 3], [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
+# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2])
+# scenario4 = PriceScenarios([4 3 8; 4 3 8; 4 3 8; 4 3 8], [3 2 4; 3 2 4; 3 2 4; 3 2 4],
+# [2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2, 4, 4, 3],[2 2; 1 0; 2 2],
+# [2 2; 1 0; 2 2], [2 2; 3 4; 1 2],[2 2; 3 4; 1 2])
+
+scenario1 = PriceScenariosp(lambda_A[1:3,1:4], lambda_D[1:3,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
+lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4], SoC_init[1:3,1:2,1], Q[1:3,1:2,1], d0[1:3,1:2,1], DD[1:3,1:2,1])
+#IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
+scenario2 = PriceScenariosp(lambda_A[4:6,1:4], lambda_D[4:6,1:4],lambda_U[2:2,1:4],lambda_D[2:2,1:4],
+lambda_Im[2:2,1:4],lambda_Ip[2:2,1:4], SoC_init[1:3,1:2,2], Q[1:3,1:2,2], d0[1:3,1:2,2], DD[1:3,1:2,2])
+# SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
+scenario3 = PriceScenariosp(lambda_A[7:9,1:4], lambda_D[7:9,1:4],lambda_U[3:3,1:4],lambda_D[3:3,1:4],
+lambda_Im[3:3,1:4],lambda_Ip[3:3,1:4], SoC_init[1:3,1:2,3], Q[1:3,1:2,3], d0[1:3,1:2,3], DD[1:3,1:2,3])
+scenario4 = PriceScenariosp(lambda_A[10:12,1:4], lambda_D[10:12,1:4],lambda_U[4:4,1:4],lambda_D[4:4,1:4],
+lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4], SoC_init[1:3,1:2,4], Q[1:3,1:2,4], d0[1:3,1:2,4], DD[1:3,1:2,4])
+
+
     # stage to scenario partition
     stageid_to_scenpart = [
         OrderedSet([BitSet(1:4)]),                      # Stage 1
@@ -198,7 +210,8 @@ function build_simpleexampleEV()
     # dim_to_subspace = [1+(7*(Df)+Df*Nf)*i:(7*(Df)+Df*Nf)*(i+1) for i in 0:3-1]
     # dim_to_subspace = [1:8, 9:16, 17:44]
     # dim_to_subspace = [1:8, 9:16, 17:120]
-    dim_to_subspace = [1:8, 9:16, 17:Tf*Df*2+Df*5+In*Nf*Df*2+In*Nf*Mn*2]
+    # dim_to_subspace = [1:8, 9:16, 17:Tf*Df*2+Df*5+In*Nf*Df*2+In*Nf*Mn*2]
+    dim_to_subspace = [1:8, 9:16, 17:59]
 
     custom_nscenarios = 4
     custom_nstages =3
@@ -231,6 +244,4 @@ function build_simpleexampleEV()
 end
 
 # put real data
-# check print model
 # put in PHA context
-# calculate lambda_Im, lambda_Ip
