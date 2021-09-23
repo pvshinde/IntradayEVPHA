@@ -4,7 +4,7 @@ using RandomizedProgressiveHedging, JuMP
 # using Revise
 @everywhere const RPH = RandomizedProgressiveHedging
 
-@everywhere struct PriceScenariosp <: RPH.AbstractScenario
+@everywhere struct PriceScenarios <: RPH.AbstractScenario
     ID_ask_price::Matrix{Float64}
     ID_buy_price::Matrix{Float64}
     Up_price::Matrix{Float64}
@@ -13,7 +13,7 @@ using RandomizedProgressiveHedging, JuMP
     Ip_price::Matrix{Float64}
 end
 
-@everywhere function build_fs_CsEV!(model::JuMP.Model, s::PriceScenariosp, id_scen::ScenarioId)
+@everywhere function build_fs_CsEV!(model::JuMP.Model, s::PriceScenarios, id_scen::ScenarioId)
     # n = length(s.trajcenter)
     Tf = 3 # no. of stages, different for different DPs
 
@@ -153,16 +153,9 @@ function build_simpleexampleEV()
 # scenario4 = PriceScenariosp(lambda_A[10:12,1:4], lambda_D[10:12,1:4],lambda_U[4:4,1:4],lambda_D[4:4,1:4],
 # lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4])
 
-scenario1 = PriceScenariosp(lambda_A[1:3,1:4], lambda_D[1:3,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
-lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4])
+scenarios = [PriceScenarios(lambda_A[1:3,1:4],lambda_A[1:3,1:4],lambda_A[1:1,1:4],lambda_A[1:1,1:4],
+            lambda_A[1:1,1:4],lambda_A[1:1,1:4]) for i in 1:4]
 #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
-scenario2 = PriceScenariosp(lambda_A[4:6,1:4], lambda_D[4:6,1:4],lambda_U[2:2,1:4],lambda_D[2:2,1:4],
-lambda_Im[2:2,1:4],lambda_Ip[2:2,1:4])
-# SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
-scenario3 = PriceScenariosp(lambda_A[7:9,1:4], lambda_D[7:9,1:4],lambda_U[3:3,1:4],lambda_D[3:3,1:4],
-lambda_Im[3:3,1:4],lambda_Ip[3:3,1:4])
-scenario4 = PriceScenariosp(lambda_A[10:12,1:4], lambda_D[10:12,1:4],lambda_U[4:4,1:4],lambda_D[4:4,1:4],
-lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4])
 
 
     # stage to scenario partition
@@ -188,7 +181,7 @@ lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4])
     scenariotree = ScenarioTree(; depth=3, nbranching=2)
 
     pb = Problem(
-        [scenario1, scenario2, scenario3, scenario4],  # scenarios array
+        scenarios,  # scenarios array
         build_fs_CsEV!,
         [0.25, 0.25, 0.25, 0.25],                  # scenario probabilities
         custom_nscenarios,
