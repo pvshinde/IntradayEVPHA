@@ -153,8 +153,8 @@ function build_simpleexampleEV()
 # scenario4 = PriceScenariosp(lambda_A[10:12,1:4], lambda_D[10:12,1:4],lambda_U[4:4,1:4],lambda_D[4:4,1:4],
 # lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4])
 
-scenarios = [PriceScenarios(lambda_A[1:3,1:4],lambda_A[1:3,1:4],lambda_A[1:1,1:4],lambda_A[1:1,1:4],
-            lambda_A[1:1,1:4],lambda_A[1:1,1:4]) for i in 1:4]
+scenarios = [PriceScenarios(lambda_A[1+3*i:3*(i+1),1:4],lambda_D[1+3*i:3*(i+1),1:4],lambda_U[i:i,1:4],lambda_D[i:i,1:4],
+            lambda_Im[i:i,1:4],lambda_Ip[i:i,1:4]) for i in 1:4]
 #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
 
 
