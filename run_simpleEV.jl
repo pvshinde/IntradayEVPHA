@@ -31,23 +31,23 @@ function main()
     println("")
     #
     # #########################################################
-    # ## Problem solve: synchronous (un parallelized) version of PH
-    # y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
-    # println("\nSynchronous solve output is:")
-    # display(y_sync)
-    #
-    # #########################################################
-    # ## Problem solve: asynchronous (parallelized) version of PH
-    # y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
-    # println("\nRandom Par solve output is:")
-    # display(y_par)
-    #
-    #
-    # #########################################################
-    # ## Problem solve: asynchronous (parallelized) version of PH
-    # y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
-    # println("Asynchronous solve output is:")
-    # display(y_async)
+    ## Problem solve: synchronous (un parallelized) version of PH
+    y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
+    println("\nSynchronous solve output is:")
+    display(y_sync)
+
+    #########################################################
+    ## Problem solve: asynchronous (parallelized) version of PH
+    y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
+    println("\nRandom Par solve output is:")
+    display(y_par)
+
+
+    #########################################################
+    ## Problem solve: asynchronous (parallelized) version of PH
+    y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
+    println("Asynchronous solve output is:")
+    display(y_async)
 
     return
 end

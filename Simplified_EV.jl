@@ -132,8 +132,8 @@ end
     Y = collect(Iterators.flatten([union(pA[1:Tf,1:Df], pB[1:Tf,1:Df], pU[1:Df], pD[1:Df], pC[1:Df],
                  pIp[1:Df], pIm[1:Df], pcharge[1:In, 1:Df], SoC[1:In, 1:Df])]))
 
-    print(Y)
-    print(model)
+    # print(Y)
+    # print(model)
     # print(JuMP.value.(pA))
 
     return Y, objexpr, []
