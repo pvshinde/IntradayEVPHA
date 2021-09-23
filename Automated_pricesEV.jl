@@ -11,28 +11,17 @@ using RandomizedProgressiveHedging, JuMP
     Dn_price::Matrix{Float64}
     Im_price::Matrix{Float64}
     Ip_price::Matrix{Float64}
-    Init_SoC::Matrix{Float64}
-    Q::Matrix{Float64}
-    d0::Matrix{Float64}
-    DD::Matrix{Float64}
 end
 
 @everywhere function build_fs_CsEV!(model::JuMP.Model, s::PriceScenariosp, id_scen::ScenarioId)
     # n = length(s.trajcenter)
-    Tf = 3 # no. of stages
-    Wf = 4 # this not really a scenario in this case. It is just like any other index for example dams.
+    Tf = 3 # no. of stages, different for different DPs
 
-    Df = 1 # no. of time slots (Delivery products)
-    Nf = 2 # no. of car cluster
-    In = 3 # no. of cars
-    Mn = 3 # no. of reservations
-
-    # Vf = 10 # no. of scenarios for NAC
+    Df = 3 # no. of time slots (Delivery products)
+    In = 10 # no. of cars
 
     Pmax = 6.6 #maximal charging rate
-    SoCmax = 24 #upper limit of soc of car i in cluster n
-    L1 = 24
-    L2 = 24
+    SoCmax = 24 #upper limit of soc of car i
     PA_max = 50
     PB_max = 50
     P_max = 50
@@ -41,12 +30,17 @@ end
     lambda_f = 0.5 #imbalance fee
     delta_d = 1 #time step
     # Q = ones(Mn, Nf) #reserved battery level of reservation m in cluster n scenario w (3D)
-    Tleave = [24, 24, 24, 24]
+
+    Q = [30, 33, 34, 20, 25, 28, 27, 35, 24, 30] # charging requirement per EV
+    SoC_init = [10, 12, 14, 15, 18, 20, 14, 17, 18, 11] # initial SOC for each EV when it arrives
+    d0 = [2, 3, 1, 2, 3, 2, 4, 4, 2, 1] # time of arrival of each EV
+    DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
+
     epsilon = 0.01
     pi_w = 0.05 # probability of scenarios
 
-    P_DA=[4, 27, 30, 33] # DA position for each DP
-    lamba_DA = [18, 20, 14, 17] # DA prces for each DP
+    P_DA=[30, 60, 45, 29, 50, 45, 40, 44, 48, 50] # DA position of EV aggregator for each DP
+    lamba_DA = [25, 30, 35, 40, 28, 44, 34, 38, 37, 40] # DA prces of EV aggregator for each DP
 
     # lambda_Im = zeros(Wf, Df)
     # lambda_Ip = zeros(Wf, Df)
@@ -86,14 +80,14 @@ end
 
 for i = 1:In
     for d = 1:Df
-        if s.d0[i] > d && d > s.DD[i]
+        if d0[i] > d && d > DD[i]
             @constraint(model, pcharge[i, d] == 0)
         else
             @constraint(model, pcharge[i, d] <= Pmax)
         end
-        if d >= s.d0[i] && d < s.DD[i]
-            if d == s.d0[i]
-                @constraint(model, SoC[i, d] == s.Init_SoC[i] + alpha * pcharge[i, d] * delta_d)
+        if d >= d0[i] && d < DD[i]
+            if d == d0[i]
+                @constraint(model, SoC[i, d] == SoC_init[i] + alpha * pcharge[i, d] * delta_d)
             else
                 @constraint(model, SoC[i, d] == SoC[i, d-1] + alpha * pcharge[i, d] * delta_d)
             end
@@ -101,8 +95,8 @@ for i = 1:In
         else
             @constraint(model, SoC[i, d] == 0)
         end
-        if  d == s.DD[i]
-            @constraint(model, s.Q[i] - SoC[i, d] >= epsilon)  # equation 21
+        if  d == DD[i]
+            @constraint(model, Q[i] - SoC[i, d] >= epsilon)  # equation 21
         end
     end
 end
@@ -144,21 +138,31 @@ function build_simpleexampleEV()
     Tf = 3 # no. of stages
     Wf = 4 # this not really a scenario in this case. It is just like any other index for example dams.
 
-    Df = 1 # no. of time slots (Delivery products)
-    Nf = 2 # no. of car cluster
-    In = 3 # no. of cars
-    Mn = 3 # no. of reservations
+    Df = 3 # no. of time slots (Delivery products)
+    In = 10 # no. of cars
+
 #assuming three ID stages will correspond to 4 scenarios if nbranching=2, one BM stage
+# scenario1 = PriceScenariosp(lambda_A[1:3,1:4], lambda_D[1:3,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
+# lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4])
+# #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
+# scenario2 = PriceScenariosp(lambda_A[4:6,1:4], lambda_D[4:6,1:4],lambda_U[2:2,1:4],lambda_D[2:2,1:4],
+# lambda_Im[2:2,1:4],lambda_Ip[2:2,1:4])
+# # SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
+# scenario3 = PriceScenariosp(lambda_A[7:9,1:4], lambda_D[7:9,1:4],lambda_U[3:3,1:4],lambda_D[3:3,1:4],
+# lambda_Im[3:3,1:4],lambda_Ip[3:3,1:4])
+# scenario4 = PriceScenariosp(lambda_A[10:12,1:4], lambda_D[10:12,1:4],lambda_U[4:4,1:4],lambda_D[4:4,1:4],
+# lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4])
+
 scenario1 = PriceScenariosp(lambda_A[1:3,1:4], lambda_D[1:3,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
-lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4], SoC_init[1:3,1:2,1], Q[1:3,1:2,1], d0[1:3,1:2,1], DD[1:3,1:2,1])
+lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4])
 #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
 scenario2 = PriceScenariosp(lambda_A[4:6,1:4], lambda_D[4:6,1:4],lambda_U[2:2,1:4],lambda_D[2:2,1:4],
-lambda_Im[2:2,1:4],lambda_Ip[2:2,1:4], SoC_init[1:3,1:2,2], Q[1:3,1:2,2], d0[1:3,1:2,2], DD[1:3,1:2,2])
+lambda_Im[2:2,1:4],lambda_Ip[2:2,1:4])
 # SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
 scenario3 = PriceScenariosp(lambda_A[7:9,1:4], lambda_D[7:9,1:4],lambda_U[3:3,1:4],lambda_D[3:3,1:4],
-lambda_Im[3:3,1:4],lambda_Ip[3:3,1:4], SoC_init[1:3,1:2,3], Q[1:3,1:2,3], d0[1:3,1:2,3], DD[1:3,1:2,3])
+lambda_Im[3:3,1:4],lambda_Ip[3:3,1:4])
 scenario4 = PriceScenariosp(lambda_A[10:12,1:4], lambda_D[10:12,1:4],lambda_U[4:4,1:4],lambda_D[4:4,1:4],
-lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4], SoC_init[1:3,1:2,4], Q[1:3,1:2,4], d0[1:3,1:2,4], DD[1:3,1:2,4])
+lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4])
 
 
     # stage to scenario partition

@@ -2,7 +2,8 @@ using Distributed
 @everywhere using JuMP, RandomizedProgressiveHedging
 
 # include("simple_trialEV.jl")
-include("Simplified_EV.jl")
+# include("Simplified_EV.jl")
+include("Automated_pricesEV.jl")
 using Ipopt
 
 function main()
@@ -55,8 +56,8 @@ end
 main()
 
 Tf=3
-Df=1
-In = 3 # no. of cars
+Df=3
+In = 10 # no. of cars
 n_scen=4
 pA_val= zeros(n_scen,Tf*Df)
 pB_val= zeros(n_scen,Tf*Df)
