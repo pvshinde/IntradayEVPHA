@@ -5,6 +5,7 @@ using Distributed
 # include("Simplified_EV.jl")
 include("Automated_pricesEV.jl")
 using Ipopt
+using Plots
 
 function main()
     pb = build_simpleexampleEV()
@@ -31,31 +32,31 @@ function main()
     display(y_PH)
     println("")
     #
+    # # #########################################################
+    # ## Problem solve: synchronous (un parallelized) version of PH
+    # y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
+    # println("\nSynchronous solve output is:")
+    # display(y_sync)
+    #
     # #########################################################
-    ## Problem solve: synchronous (un parallelized) version of PH
-    y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
-    println("\nSynchronous solve output is:")
-    display(y_sync)
-
-    #########################################################
-    ## Problem solve: asynchronous (parallelized) version of PH
-    y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
-    println("\nRandom Par solve output is:")
-    display(y_par)
-
-
-    #########################################################
-    ## Problem solve: asynchronous (parallelized) version of PH
-    y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
-    println("Asynchronous solve output is:")
-    display(y_async)
+    # ## Problem solve: asynchronous (parallelized) version of PH
+    # y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
+    # println("\nRandom Par solve output is:")
+    # display(y_par)
+    #
+    #
+    # #########################################################
+    # ## Problem solve: asynchronous (parallelized) version of PH
+    # y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
+    # println("Asynchronous solve output is:")
+    # display(y_async)
 
     return
 end
 
 main()
 
-Tf=3
+Tf=4
 Df=3
 In = 10 # no. of cars
 n_scen=4

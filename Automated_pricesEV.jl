@@ -15,7 +15,7 @@ end
 
 @everywhere function build_fs_CsEV!(model::JuMP.Model, s::PriceScenarios, id_scen::ScenarioId)
     # n = length(s.trajcenter)
-    Tf = 3 # no. of stages, different for different DPs
+    Tf = 4 # no. of stages, different for different DPs
 
     Df = 3 # no. of time slots (Delivery products)
     In = 10 # no. of cars
@@ -40,7 +40,7 @@ end
     pi_w = 0.05 # probability of scenarios
 
     P_DA=[30, 60, 45, 29, 50, 45, 40, 44, 48, 50] # DA position of EV aggregator for each DP
-    lamba_DA = [25, 30, 35, 40, 28, 44, 34, 38, 37, 40] # DA prces of EV aggregator for each DP
+    lamba_DA = [15, 10, 15, 10, 18, 14, 14, 18, 17, 20] # DA prces of EV aggregator for each DP
 
     # lambda_Im = zeros(Wf, Df)
     # lambda_Ip = zeros(Wf, Df)
@@ -135,35 +135,39 @@ end
 function build_simpleexampleEV()
         #########################################################
     ## Problem definition
-    Tf = 3 # no. of stages
-    Wf = 4 # this not really a scenario in this case. It is just like any other index for example dams.
-
+    Tf = 4 # no. of stages
     Df = 3 # no. of time slots (Delivery products)
     In = 10 # no. of cars
 
 #assuming three ID stages will correspond to 4 scenarios if nbranching=2, one BM stage
-# scenario1 = PriceScenariosp(lambda_A[1:3,1:4], lambda_D[1:3,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
-# lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4])
-# #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
-# scenario2 = PriceScenariosp(lambda_A[4:6,1:4], lambda_D[4:6,1:4],lambda_U[2:2,1:4],lambda_D[2:2,1:4],
-# lambda_Im[2:2,1:4],lambda_Ip[2:2,1:4])
-# # SoC is for Nf that is 3, ID_A, ID_B, SOC_init, Q, d0, DD
-# scenario3 = PriceScenariosp(lambda_A[7:9,1:4], lambda_D[7:9,1:4],lambda_U[3:3,1:4],lambda_D[3:3,1:4],
-# lambda_Im[3:3,1:4],lambda_Ip[3:3,1:4])
-# scenario4 = PriceScenariosp(lambda_A[10:12,1:4], lambda_D[10:12,1:4],lambda_U[4:4,1:4],lambda_D[4:4,1:4],
-# lambda_Im[4:4,1:4],lambda_Ip[4:4,1:4])
+# scenarios = [PriceScenarios(lambda_A[1+3*i:3*(i+1),1:4],lambda_D[1+3*i:3*(i+1),1:4],lambda_U[i:i,1:4],lambda_D[i:i,1:4],
+#             lambda_Im[i:i,1:4],lambda_Ip[i:i,1:4]) for i in 1:4]
+scenarios = [PriceScenarios(lambda_A[1:4,1:4],lambda_D[1:4,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
+            lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4]) for i in 0:7]
 
-scenarios = [PriceScenarios(lambda_A[1+3*i:3*(i+1),1:4],lambda_D[1+3*i:3*(i+1),1:4],lambda_U[i:i,1:4],lambda_D[i:i,1:4],
-            lambda_Im[i:i,1:4],lambda_Ip[i:i,1:4]) for i in 1:4]
 #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
-
 
     # stage to scenario partition
     stageid_to_scenpart = [
-        OrderedSet([BitSet(1:4)]),                      # Stage 1
-        OrderedSet([BitSet(1:2), BitSet(3:4)]),           # Stage 2
-        OrderedSet([BitSet(1), BitSet(2), BitSet(3), BitSet(4)]),  # Stage 3
+        OrderedSet([BitSet(1:8)]),                      # Stage 1
+        OrderedSet([BitSet(1:4), BitSet(5:8)]),           # Stage 2
+        OrderedSet([BitSet(1+2*i:2*(1+i)) for i in 0:3]), #stage 3
+        OrderedSet([BitSet(1), BitSet(2), BitSet(3), BitSet(4),BitSet(5), BitSet(6), BitSet(7), BitSet(8)]) #stage4
     ]
+    # stageid_to_scenpart = [
+    #     OrderedSet([BitSet(1:2048)]),                      # Stage 1
+    #     OrderedSet([BitSet(1:1024), BitSet(1025:2048)]),           # Stage 2
+    #     OrderedSet([BitSet(1:512), BitSet(513:1024), BitSet(1025:1536), BitSet(1537:2048)]),  # Stage 3
+    #     OrderedSet([BitSet(1:256), BitSet(257:512), BitSet(513:768), BitSet(769:1024),BitSet(1025:1280), BitSet(1281:1536), BitSet(1537:1792), BitSet(1793:2048)]), #stage4
+    #     OrderedSet([BitSet(1+128*i:128*(1+i)) for i in 0:15]) # stage 5
+    #     OrderedSet([BitSet(1+64*i:64*(1+i)) for i in 0:31]) # stage 6
+    #     OrderedSet([BitSet(1+32*i:32*(1+i)) for i in 0:63]) # stage 7
+    #     OrderedSet([BitSet(1+16*i:16*(1+i)) for i in 0:127]) # stage 8
+    #     OrderedSet([BitSet(1+8*i:8*(1+i)) for i in 0:255]) # stage 9
+    #     OrderedSet([BitSet(1+4*i:4*(1+i)) for i in 0:511]) # stage 10
+    #     OrderedSet([BitSet(1+2*i:2*(1+i)) for i in 0:1023]) # stage 11
+    #     OrderedSet([BitSet(i) for i in 0:2047]) # stage 12
+    # ]
 
     # scenariotree =  ScenarioTree(; depth=nstages, nbranching=2)
     # dim_to_subspace =[1:8, 9:16, 17:24] #  depends on the number of variables. here when you only have one variable pA you say 1:1, 2:2, 3:3
@@ -172,18 +176,18 @@ scenarios = [PriceScenarios(lambda_A[1+3*i:3*(i+1),1:4],lambda_D[1+3*i:3*(i+1),1
     # dim_to_subspace = [1:8, 9:16, 17:44]
     # dim_to_subspace = [1:8, 9:16, 17:120]
     # dim_to_subspace = [1:8, 9:16, 17:Tf*Df*2+Df*5+In*Nf*Df*2+In*Nf*Mn*2]
-    dim_to_subspace = [1:8, 9:16, 17:Tf*Df*2+Df*5+In*Df*2]
+    dim_to_subspace = [1:24, 25:48, 49:72, 73:Tf*Df*2+Df*5+In*Df*2]
 
-    custom_nscenarios = 4
-    custom_nstages =3
+    custom_nscenarios = 8
+    custom_nstages =4
     # custom_scenariotree= ScenarioTree(stageid_to_scenpart)
 
-    scenariotree = ScenarioTree(; depth=3, nbranching=2)
+    scenariotree = ScenarioTree(; depth=4, nbranching=2)
 
     pb = Problem(
         scenarios,  # scenarios array
         build_fs_CsEV!,
-        [0.25, 0.25, 0.25, 0.25],                  # scenario probabilities
+        [0.25, 0.25, 0.25, 0.25,0.25, 0.25, 0.25, 0.25],                  # scenario probabilities
         custom_nscenarios,
         custom_nstages,
         dim_to_subspace,
