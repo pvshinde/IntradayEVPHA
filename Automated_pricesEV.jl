@@ -39,8 +39,8 @@ end
     epsilon = 0.01
     pi_w = 0.05 # probability of scenarios
 
-    P_DA=[30, 60, 45, 29, 50, 45, 40, 44, 48, 50] # DA position of EV aggregator for each DP
-    lamba_DA = [15, 10, 15, 10, 18, 14, 14, 18, 17, 20] # DA prces of EV aggregator for each DP
+    lambda_DA=[30, 60, 45, 29, 50, 45, 40, 44, 48, 50] # DA position of EV aggregator for each DP
+    P_DA = [15, 10, 15, 10, 18, 14, 14, 18, 17, 20] # DA prces of EV aggregator for each DP
 
     # lambda_Im = zeros(Wf, Df)
     # lambda_Ip = zeros(Wf, Df)
@@ -70,10 +70,10 @@ end
     @constraint(model, pIm .>= 0)
 
     objexpr = sum(sum(pB[t, d]*s.ID_buy_price[t,d] - pA[t, d]*s.ID_ask_price[t,d] for t in Tf) for d in Df)
-                + sum(pD[d] * s.Up_price[d] - pU[d] * s.Dn_price[d] - pIm[d]*s.Im_price[d] + pIp[d]*s.Ip_price[d] +
+                + sum(pD[d] * s.Dn_price[d] - pU[d] * s.Up_price[d] - pIm[d]*s.Im_price[d] + pIp[d]*s.Ip_price[d] +
                 (pIp[d] + pIm[d]) * lambda_f for d in Df)
 
-    @constraint(model, [d=1:Df], pIp[d] - pIm[d] == sum(pA[t,d] - pB[t,d] for t in 1:Tf) + pD[d] -pU[d] -pC[d])
+    @constraint(model, [d=1:Df], pIp[d] - pIm[d] == P_DA[d] + sum(-pA[t,d] + pB[t,d] for t in 1:Tf) + pD[d] -pU[d] -pC[d])
 
     # @constraint(model,
     #     [d = 1:Df], pC[d] == sum(pcharge[i, d] for i = 1:In) ) # equation 17
@@ -144,7 +144,7 @@ function build_simpleexampleEV()
 #             lambda_Im[i:i,1:4],lambda_Ip[i:i,1:4]) for i in 1:4]
 scenarios = [PriceScenarios(lambda_A[1:4,1:4],lambda_D[1:4,1:4],lambda_U[1:1,1:4],lambda_D[1:1,1:4],
             lambda_Im[1:1,1:4],lambda_Ip[1:1,1:4]) for i in 0:7]
-
+            
 #IDpriceA, B, Upreg, Dnreg,Imprice, Ipprice, SoCinit, Q, d0, DD
 
     # stage to scenario partition
