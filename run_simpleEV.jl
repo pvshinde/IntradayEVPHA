@@ -14,7 +14,7 @@ function main()
     pb = build_simpleexampleEV()
     #
     hist=OrderedDict{Symbol, Any}(
-        :approxsol => zeros(2048,490)
+        :approxsol => zeros(2048,690)
     )
 
     println("Full problem is:")
@@ -43,16 +43,16 @@ function main()
     #
     # #########################################################
     # # Problem solve: synchronous (parallelized) version of PH
-    global y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
-    println("\nRandom Par solve output is:")
-    display(y_par)
+    # global y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
+    # println("\nRandom Par solve output is:")
+    # display(y_par)
 
 
     #########################################################
     ## Problem solve: asynchronous (parallelized) version of PH
-    # global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
-    # println("Asynchronous solve output is:")
-    # display(y_async)
+    global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
+    println("Asynchronous solve output is:")
+    display(y_async)
 
     return
 end
@@ -61,7 +61,7 @@ main()
 
 Tf=12
 Df=10
-In = 10 # no. of cars
+In = 20 # no. of cars
 n_scen=2048
 #
 # pA_val= zeros(n_scen,Tf*Df);
@@ -124,77 +124,77 @@ n_scen=2048
 # p_ch_sync=y_sync[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
 # SoC_sync=y_sync[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
 
-pA_par= zeros(n_scen,Tf*Df);
-pB_par= zeros(n_scen,Tf*Df);
-pU_par= zeros(n_scen,Df);
-pD_par= zeros(n_scen,Df);
-pC_par= zeros(n_scen,Df);
-pIp_par= zeros(n_scen,Df);
-pIm_par= zeros(n_scen,Df);
-p_ch_par=zeros(In*Df);
-SoC_par=zeros(In*Df);
+# pA_par= zeros(n_scen,Tf*Df);
+# pB_par= zeros(n_scen,Tf*Df);
+# pU_par= zeros(n_scen,Df);
+# pD_par= zeros(n_scen,Df);
+# pC_par= zeros(n_scen,Df);
+# pIp_par= zeros(n_scen,Df);
+# pIm_par= zeros(n_scen,Df);
+# p_ch_par=zeros(In*Df);
+# SoC_par=zeros(In*Df);
+#
+# pA_par= y_par[:,1:Tf*Df];
+# pB_par= y_par[:,Tf*Df+1:Tf*Df*2];
+# pU_par= y_par[:,Tf*Df*2+1:Tf*Df*2+Df];
+# pD_par= y_par[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
+# pC_par= y_par[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
+# pIp_par= y_par[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
+# pIm_par= y_par[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
+# p_ch_par=y_par[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
+# SoC_par=y_par[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+#
+pA_async= zeros(n_scen,Tf*Df);
+pB_async= zeros(n_scen,Tf*Df);
+pU_async= zeros(n_scen,Df);
+pD_async= zeros(n_scen,Df);
+pC_async= zeros(n_scen,Df);
+pIp_async= zeros(n_scen,Df);
+pIm_async= zeros(n_scen,Df);
+p_ch_async=zeros(In*Df);
+SoC_async=zeros(In*Df);
 
-pA_par= y_par[:,1:Tf*Df];
-pB_par= y_par[:,Tf*Df+1:Tf*Df*2];
-pU_par= y_par[:,Tf*Df*2+1:Tf*Df*2+Df];
-pD_par= y_par[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
-pC_par= y_par[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
-pIp_par= y_par[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
-pIm_par= y_par[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
-p_ch_par=y_par[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
-SoC_par=y_par[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
-#
-# pA_async= zeros(n_scen,Tf*Df);
-# pB_async= zeros(n_scen,Tf*Df);
-# pU_async= zeros(n_scen,Df);
-# pD_async= zeros(n_scen,Df);
-# pC_async= zeros(n_scen,Df);
-# pIp_async= zeros(n_scen,Df);
-# pIm_async= zeros(n_scen,Df);
-# p_ch_async=zeros(In*Df);
-# SoC_async=zeros(In*Df);
-#
-# pA_async= y_async[:,1:Tf*Df];
-# pB_async= y_async[:,Tf*Df+1:Tf*Df*2];
-# pU_async= y_async[:,Tf*Df*2+1:Tf*Df*2+Df];
-# pD_async= y_async[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
-# pC_async= y_async[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
-# pIp_async= y_async[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
-# pIm_async= y_async[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
-# p_ch_async=y_async[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
-# SoC_async=y_async[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+pA_async= y_async[:,1:Tf*Df];
+pB_async= y_async[:,Tf*Df+1:Tf*Df*2];
+pU_async= y_async[:,Tf*Df*2+1:Tf*Df*2+Df];
+pD_async= y_async[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
+pC_async= y_async[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
+pIp_async= y_async[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
+pIm_async= y_async[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
+p_ch_async=y_async[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
+SoC_async=y_async[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
 
-# # plots
-# plotly()
-#
-# pA = Dict()
-# pB = Dict()
-# for i in 1:10
-#     pA[i] = pA_async[:, i:Df:end]
-#     display(bar(mean(pA[i], dims=1)', title="pA DP $i"))
-#     pB[i] = pB_async[:, i:Df:end]
-#     display(bar(mean(pB[i], dims=1)', title="pB DP $i"))
-# end
-#
-# display(bar(mean(pU_async, dims=1)', title="pU DPs"))
-# display(bar(mean(pD_async, dims=1)', title="pD DPs"))
-#
-# display(plot(mean(pC_async, dims=1)', title="pC DPs"))
-# display(plot(mean(pIm_async, dims=1)', title="pIm DPs"))
-# display(plot(mean(pIp_async, dims=1)', title="pIp DPs"))
-#
-# p_ch = Dict()
-# SoC = Dict()
-# plt_SoC = plot()
-# plt_p_ch = plot()
-# for i in 1:10
-#     p_ch[i] = p_ch_async[:, i:In:end]
-#     # display(plot(mean(p_ch[i], dims=1)', title="p_ch EV $i"))
-#     SoC[i] = SoC_async[:, i:In:end]
-#     # display(plot(mean(SoC[i], dims=1)', title="SoC EV $i"))
-#     plot!(plt_SoC, mean(SoC[i], dims=1)', label="SoC $i")
-#     plot!(plt_p_ch, mean(p_ch[i], dims=1)', label="p_ch $i")
-# end
-#
-# display(plt_SoC)
-# display(plt_p_ch)
+# plots
+plotly()
+
+pA = Dict()
+pB = Dict()
+for i in 1:10
+    pA[i] = pA_async[:, i:Df:end]
+    display(bar(mean(pA[i], dims=1)', title="pA DP $i"))
+    pB[i] = pB_async[:, i:Df:end]
+    display(bar(mean(pB[i], dims=1)', title="pB DP $i"))
+end
+
+display(bar(mean(pU_async, dims=1)', title="pU DPs"))
+display(bar(mean(pD_async, dims=1)', title="pD DPs"))
+
+display(plot(mean(pC_async, dims=1)', title="pC DPs"))
+display(plot(mean(pIm_async, dims=1)', title="pIm DPs"))
+display(plot(mean(pIp_async, dims=1)', title="pIp DPs"))
+
+p_ch = Dict()
+SoC = Dict()
+plt_SoC = plot()
+plt_p_ch = plot()
+for i in 1:10
+    p_ch[i] = p_ch_async[:, i:In:end]
+    # display(plot(mean(p_ch[i], dims=1)', title="p_ch EV $i"))
+    SoC[i] = SoC_async[:, i:In:end]
+    # display(plot(mean(SoC[i], dims=1)', title="SoC EV $i"))
+    plot!(plt_SoC, mean(SoC[i], dims=1)', label="SoC $i")
+    plot!(plt_p_ch, mean(p_ch[i], dims=1)', label="p_ch $i")
+end
+
+display(plt_SoC)
+display(plt_p_ch)
