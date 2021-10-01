@@ -3,18 +3,20 @@ using Statistics
 
 @everywhere using JuMP, RandomizedProgressiveHedging
 
+
 # include("simple_trialEV.jl")
 # include("Simplified_EV.jl")
 # include("Automated_pricesEV.jl")
+# include("build_priceEV.jl")
 include("Full_EV_version.jl")
 using Ipopt
 using Plots
 
 function main()
     pb = build_simpleexampleEV()
-    #
+
     hist=OrderedDict{Symbol, Any}(
-        :approxsol => zeros(2048,690)
+        :approxsol => zeros(2048,790)
     )
 
     println("Full problem is:")
@@ -29,14 +31,14 @@ function main()
     #
     #
     # #########################################################
-    # ## Problem solve: classical PH algo, as in Ruszczynski book, p. 203
+    ## Problem solve: classical PH algo, as in Ruszczynski book, p. 203
     # global y_PH = solve_progressivehedging(pb, maxtime=500, printstep=10, hist=hist)
     # println("\nSequential solve output is:")
     # display(y_PH)
     # println("")
-    #
-    # # # #########################################################
-    # # Problem solve: synchronous (un parallelized) version of PH
+
+    # # #########################################################
+    # Problem solve: synchronous (un parallelized) version of PH
     # global y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
     # println("\nSynchronous solve output is:")
     # display(y_sync)
@@ -46,10 +48,10 @@ function main()
     # global y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
     # println("\nRandom Par solve output is:")
     # display(y_par)
-
-
-    #########################################################
-    ## Problem solve: asynchronous (parallelized) version of PH
+    #
+    #
+    # ########################################################
+    # Problem solve: asynchronous (parallelized) version of PH
     global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
     println("Asynchronous solve output is:")
     display(y_async)
@@ -58,12 +60,12 @@ function main()
 end
 
 main()
-
+#
 Tf=12
 Df=10
 In = 20 # no. of cars
 n_scen=2048
-#
+
 # pA_val= zeros(n_scen,Tf*Df);
 # pB_val= zeros(n_scen,Tf*Df);
 # pU_val= zeros(n_scen,Df);
@@ -123,7 +125,7 @@ n_scen=2048
 # pIm_sync= y_sync[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
 # p_ch_sync=y_sync[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
 # SoC_sync=y_sync[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
-
+#
 # pA_par= zeros(n_scen,Tf*Df);
 # pB_par= zeros(n_scen,Tf*Df);
 # pU_par= zeros(n_scen,Df);
@@ -164,7 +166,7 @@ pIm_async= y_async[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
 p_ch_async=y_async[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
 SoC_async=y_async[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
 
-# plots
+# # plots
 plotly()
 
 pA = Dict()

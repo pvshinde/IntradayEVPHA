@@ -21,7 +21,7 @@ function main()
     println(pb)
 
     #########################################################
-    ## Problem solve: build and solve complete problem, exponential in constraints
+    # Problem solve: build and solve complete problem, exponential in constraints
     # global y_direct = solve_direct(pb, optimizer = Ipopt.Optimizer)
     # println("\nDirect solve output is:")
     # display(y_direct)
@@ -59,90 +59,90 @@ end
 
 main()
 
-# Tf=14
-# Df=10
-# In = 20 # no. of cars
+Tf=14
+Df=10
+In = 20 # no. of cars
 # n_scen=8196
 # #
-# # pA_val= zeros(n_scen,Tf*Df);
-# # pB_val= zeros(n_scen,Tf*Df);
-# # pU_val= zeros(n_scen,Df);
-# # pD_val= zeros(n_scen,Df);
-# # pC_val= zeros(n_scen,Df);
-# # pIp_val= zeros(n_scen,Df);
-# # pIm_val= zeros(n_scen,Df);
-# # p_charge=zeros(In*Df);
-# # SoC=zeros(In*Df);
-# #
-# # pA_val= y_direct[:,1:Tf*Df];
-# # pB_val= y_direct[:,Tf*Df+1:Tf*Df*2];
-# # pU_val= y_direct[:,Tf*Df*2+1:Tf*Df*2+Df];
-# # pD_val= y_direct[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
-# # pC_val= y_direct[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
-# # pIp_val= y_direct[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
-# # pIm_val= y_direct[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
-# # p_ch_val=y_direct[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
-# # SoC_val=y_direct[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
-# #
-# # pA_PH= zeros(n_scen,Tf*Df);
-# # pB_PH= zeros(n_scen,Tf*Df);
-# # pU_PH= zeros(n_scen,Df);
-# # pD_PH= zeros(n_scen,Df);
-# # pC_PH= zeros(n_scen,Df);
-# # pIp_PH= zeros(n_scen,Df);
-# # pIm_PH= zeros(n_scen,Df);
-# # p_ch_PH=zeros(In*Df);
-# # SoC_PH=zeros(In*Df);
-# #
-# # pA_PH= y_PH[:,1:Tf*Df];
-# # pB_PH= y_PH[:,Tf*Df+1:Tf*Df*2];
-# # pU_PH= y_PH[:,Tf*Df*2+1:Tf*Df*2+Df];
-# # pD_PH= y_PH[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
-# # pC_PH= y_PH[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
-# # pIp_PH= y_PH[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
-# # pIm_PH= y_PH[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
-# # p_ch_PH=y_PH[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
-# # SoC_PH=y_PH[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
-# #
-# # pA_sync= zeros(n_scen,Tf*Df);
-# # pB_sync= zeros(n_scen,Tf*Df);
-# # pU_sync= zeros(n_scen,Df);
-# # pD_sync= zeros(n_scen,Df);
-# # pC_sync= zeros(n_scen,Df);
-# # pIp_sync= zeros(n_scen,Df);
-# # pIm_sync= zeros(n_scen,Df);
-# # p_ch_sync=zeros(In*Df);
-# # SoCsync=zeros(In*Df);
-# #
-# # pA_sync= y_sync[:,1:Tf*Df];
-# # pB_sync= y_sync[:,Tf*Df+1:Tf*Df*2];
-# # pU_sync= y_sync[:,Tf*Df*2+1:Tf*Df*2+Df];
-# # pD_sync= y_sync[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
-# # pC_sync= y_sync[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
-# # pIp_sync= y_sync[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
-# # pIm_sync= y_sync[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
-# # p_ch_sync=y_sync[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
-# # SoC_sync=y_sync[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+# pA_val= zeros(n_scen,Tf*Df);
+# pB_val= zeros(n_scen,Tf*Df);
+# pU_val= zeros(n_scen,Df);
+# pD_val= zeros(n_scen,Df);
+# pC_val= zeros(n_scen,Df);
+# pIp_val= zeros(n_scen,Df);
+# pIm_val= zeros(n_scen,Df);
+# p_charge=zeros(In*Df);
+# SoC=zeros(In*Df);
 #
-# # pA_par= zeros(n_scen,Tf*Df);
-# # pB_par= zeros(n_scen,Tf*Df);
-# # pU_par= zeros(n_scen,Df);
-# # pD_par= zeros(n_scen,Df);
-# # pC_par= zeros(n_scen,Df);
-# # pIp_par= zeros(n_scen,Df);
-# # pIm_par= zeros(n_scen,Df);
-# # p_ch_par=zeros(In*Df);
-# # SoC_par=zeros(In*Df);
-# #
-# # pA_par= y_par[:,1:Tf*Df];
-# # pB_par= y_par[:,Tf*Df+1:Tf*Df*2];
-# # pU_par= y_par[:,Tf*Df*2+1:Tf*Df*2+Df];
-# # pD_par= y_par[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
-# # pC_par= y_par[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
-# # pIp_par= y_par[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
-# # pIm_par= y_par[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
-# # p_ch_par=y_par[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
-# # SoC_par=y_par[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+# pA_val= y_direct[:,1:Tf*Df];
+# pB_val= y_direct[:,Tf*Df+1:Tf*Df*2];
+# pU_val= y_direct[:,Tf*Df*2+1:Tf*Df*2+Df];
+# pD_val= y_direct[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
+# pC_val= y_direct[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
+# pIp_val= y_direct[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
+# pIm_val= y_direct[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
+# p_ch_val=y_direct[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
+# SoC_val=y_direct[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+#
+# pA_PH= zeros(n_scen,Tf*Df);
+# pB_PH= zeros(n_scen,Tf*Df);
+# pU_PH= zeros(n_scen,Df);
+# pD_PH= zeros(n_scen,Df);
+# pC_PH= zeros(n_scen,Df);
+# pIp_PH= zeros(n_scen,Df);
+# pIm_PH= zeros(n_scen,Df);
+# p_ch_PH=zeros(In*Df);
+# SoC_PH=zeros(In*Df);
+#
+# pA_PH= y_PH[:,1:Tf*Df];
+# pB_PH= y_PH[:,Tf*Df+1:Tf*Df*2];
+# pU_PH= y_PH[:,Tf*Df*2+1:Tf*Df*2+Df];
+# pD_PH= y_PH[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
+# pC_PH= y_PH[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
+# pIp_PH= y_PH[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
+# pIm_PH= y_PH[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
+# p_ch_PH=y_PH[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
+# SoC_PH=y_PH[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+#
+# pA_sync= zeros(n_scen,Tf*Df);
+# pB_sync= zeros(n_scen,Tf*Df);
+# pU_sync= zeros(n_scen,Df);
+# pD_sync= zeros(n_scen,Df);
+# pC_sync= zeros(n_scen,Df);
+# pIp_sync= zeros(n_scen,Df);
+# pIm_sync= zeros(n_scen,Df);
+# p_ch_sync=zeros(In*Df);
+# SoCsync=zeros(In*Df);
+#
+# pA_sync= y_sync[:,1:Tf*Df];
+# pB_sync= y_sync[:,Tf*Df+1:Tf*Df*2];
+# pU_sync= y_sync[:,Tf*Df*2+1:Tf*Df*2+Df];
+# pD_sync= y_sync[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
+# pC_sync= y_sync[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
+# pIp_sync= y_sync[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
+# pIm_sync= y_sync[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
+# p_ch_sync=y_sync[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
+# SoC_sync=y_sync[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+#
+# pA_par= zeros(n_scen,Tf*Df);
+# pB_par= zeros(n_scen,Tf*Df);
+# pU_par= zeros(n_scen,Df);
+# pD_par= zeros(n_scen,Df);
+# pC_par= zeros(n_scen,Df);
+# pIp_par= zeros(n_scen,Df);
+# pIm_par= zeros(n_scen,Df);
+# p_ch_par=zeros(In*Df);
+# SoC_par=zeros(In*Df);
+#
+# pA_par= y_par[:,1:Tf*Df];
+# pB_par= y_par[:,Tf*Df+1:Tf*Df*2];
+# pU_par= y_par[:,Tf*Df*2+1:Tf*Df*2+Df];
+# pD_par= y_par[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
+# pC_par= y_par[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
+# pIp_par= y_par[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
+# pIm_par= y_par[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
+# p_ch_par=y_par[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
+# SoC_par=y_par[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
 # #
 # pA_async= zeros(n_scen,Tf*Df);
 # pB_async= zeros(n_scen,Tf*Df);
