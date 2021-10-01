@@ -273,7 +273,7 @@ function main()
     pb = build_simpleexampleEV()
 
     hist=OrderedDict{Symbol, Any}(
-        :approxsol => zeros(2048,791)
+        :approxsol => Float64[]
     )
 
     println("Full problem is:")
@@ -333,7 +333,7 @@ function main()
     #
     # ########################################################
     # Problem solve: asynchronous (parallelized) version of PH
-    global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
+    global y_async = solve_randomized_async(pbcvar, maxtime=5, printstep=3*3, hist=hist, callback=callback)
     println("Asynchronous solve output is:")
     display(y_async)
 
