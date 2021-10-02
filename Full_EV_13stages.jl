@@ -18,7 +18,7 @@ end
     # Tf = [3, 4, 5] # no. of stages, different for different DPs
     Tf = 13
     Df = 10 # no. of time slots (Delivery products)
-    In = 20 # no. of cars
+    In = 50 # no. of cars
 
     Pmax = 20 #maximal charging rate
     SoCmax = 60 #upper limit of soc of car i
@@ -35,17 +35,31 @@ end
     # SoC_init = [20, 12, 14, 15, 15, 15, 17, 17, 20, 20] # initial SOC for each EV when it arrives
     # d0 = [2, 3, 1, 2, 3, 2, 1, 1, 2, 1] # time of arrival of each EV
     # DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
+    #
+    # Q = [30, 33, 34, 20, 25, 28, 28, 34, 28, 30, 30, 33, 34, 20, 25, 28, 28, 34, 28, 30] # charging requirement per EV
+    # SoC_init = [20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20] # initial SOC for each EV when it arrives
+    # d0 = [2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1] # time of arrival of each EV
+    # DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
+    Q = [30, 13, 34, 20, 25, 18, 18, 10, 18, 30, 10, 33, 14, 20, 25, 28, 28, 34, 28, 30,
+    30, 11, 14, 20, 25, 28, 28, 34, 28, 10,30, 22, 34, 20, 25, 28, 28, 14, 18, 12, 16, 11, 34, 20, 25, 28, 28, 14, 18, 10] # charging requirement per EV
+    SoC_init = [20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20,
+    20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20] # initial SOC for each EV when it arrives
+    d0 = [2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1,
+    2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1] # time of arrival of each EV
+    DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10,
+    8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
 
-    Q = [30, 33, 34, 20, 25, 28, 28, 34, 28, 30, 30, 33, 34, 20, 25, 28, 28, 34, 28, 30] # charging requirement per EV
-    SoC_init = [20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20] # initial SOC for each EV when it arrives
-    d0 = [2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1] # time of arrival of each EV
-    DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
+    epsilon = 0
 
-    epsilon = 1
+    P_DA=[200, 220, 105, 401, 190, 185, 80, 214, 208, 390] # DA position of EV aggregator for each DP
+    # P_DA=[100, 120, 105, 101, 90, 85, 80, 114, 108, 100]
 
-    P_DA=[200, 220, 205, 201, 190, 185, 180, 214, 208, 190] # DA position of EV aggregator for each DP
     # lambda_DA = [15, 10, 15, 10, 18, 14, 14, 18, 17, 20] # DA prices of EV aggregator for each DP
     lambda_DA=[18.6211, 21.5615, 15.8325, 20.1678, 31.5517, 28.7284, 27.2569, 23.7927, 28.4911, 31.8757]
+    #
+    # P_DA=[200, 220, 205, 201, 190, 185, 180, 214, 208, 190] # DA position of EV aggregator for each DP
+    # # lambda_DA = [15, 10, 15, 10, 18, 14, 14, 18, 17, 20] # DA prices of EV aggregator for each DP
+    # lambda_DA=[18.6211, 21.5615, 15.8325, 20.1678, 31.5517, 28.7284, 27.2569, 23.7927, 28.4911, 31.8757]
 
 # price_to is SE3 buying
 #price_from is SE3 selling a up
@@ -143,7 +157,7 @@ function build_simpleexampleEV()
     ## Problem definition
     Tf = 13 # no. of stages
     Df = 10 # no. of time slots (Delivery products)
-    In = 20 # no. of cars
+    In = 50 # no. of cars
 
 #assuming three ID stages will correspond to 4 scenarios if nbranching=2, one BM stage
 

@@ -62,7 +62,6 @@ end
     epsilon = 0
 
     P_DA=[200, 220, 105, 401, 190, 185, 80, 214, 208, 390] # DA position of EV aggregator for each DP
-
     # P_DA=[100, 120, 105, 101, 90, 85, 80, 114, 108, 100]
 
     # lambda_DA = [15, 10, 15, 10, 18, 14, 14, 18, 17, 20] # DA prices of EV aggregator for each DP
@@ -128,7 +127,7 @@ end
 
 for t=1:Tf
     if t==1
-        @constraint(model, [d = 1:Df],  P_DA[d] >= pA[d, t]) # equation 30
+        @constraint(model, [d = 1:Df], P_DA[d] >= pA[d, t]) # equation 30
     else
         @constraint(model, [d = 1:Df], P_DA[d]+sum(pB[d, t]-pA[d, t] for t=1:t-1)>= pA[d,t]) # equation 30
     end

@@ -16,7 +16,7 @@ end
 @everywhere function build_fs_CsEV!(model::JuMP.Model, s::PriceScenarios, id_scen::ScenarioId)
     # n = length(s.trajcenter)
     # Tf = [3, 4, 5] # no. of stages, different for different DPs
-    Tf = 12
+    Tf = 11
     Df = 10 # no. of time slots (Delivery products)
     In = 50 # no. of cars
 
@@ -62,7 +62,6 @@ end
     epsilon = 0
 
     P_DA=[200, 220, 105, 401, 190, 185, 80, 214, 208, 390] # DA position of EV aggregator for each DP
-
     # P_DA=[100, 120, 105, 101, 90, 85, 80, 114, 108, 100]
 
     # lambda_DA = [15, 10, 15, 10, 18, 14, 14, 18, 17, 20] # DA prices of EV aggregator for each DP
@@ -128,7 +127,7 @@ end
 
 for t=1:Tf
     if t==1
-        @constraint(model, [d = 1:Df],  P_DA[d] >= pA[d, t]) # equation 30
+        @constraint(model, [d = 1:Df], P_DA[d] >= pA[d, t]) # equation 30
     else
         @constraint(model, [d = 1:Df], P_DA[d]+sum(pB[d, t]-pA[d, t] for t=1:t-1)>= pA[d,t]) # equation 30
     end
@@ -150,9 +149,9 @@ end
 # make sure that pcharge for i is 0 when d is less than d0 and greater than DD for that EV
 
 for d=1:9
-    Td=[4,5,6,7,8,9,10,11,12]
-        @constraint(model, [t=Td[d]:12], pA[d,t]==0)
-        @constraint(model, [t=Td[d]:12], pB[d,t]==0)
+    Td=[3,4,5,6,7,8,9,10,11]
+        @constraint(model, [t=Td[d]:11], pA[d,t]==0)
+        @constraint(model, [t=Td[d]:11], pB[d,t]==0)
 end
     Y = collect(Iterators.flatten([union(pA[1:Df,1:Tf], pB[1:Df,1:Tf], pU[1:Df], pD[1:Df], pC[1:Df],
                  pIp[1:Df], pIm[1:Df], pcharge[1:In, 1:Df], SoC[1:In, 1:Df])]))
@@ -167,7 +166,7 @@ end
 function build_simpleexampleEV()
         #########################################################
     ## Problem definition
-    Tf = 12 # no. of stages
+    Tf = 11 # no. of stages
     Df = 10 # no. of time slots (Delivery products)
     In = 50 # no. of cars
 
@@ -181,7 +180,7 @@ scenarios = [PriceScenarios([price_scenarios_1[i:i,:]; price_scenarios_2[i:i,:];
  price_reg_to_8[i:i,1:1]; price_reg_to_9[i:i,1:1]; price_reg_to_10[i:i,1:1]],
  [price_reg_from_1[i:i,1:1]; price_reg_from_2[i:i,1:1];price_reg_from_3[i:i,1:1]; price_reg_from_4[i:i,1:1];price_reg_from_5[i:i,1:1];price_reg_from_6[i:i,1:1];
  price_reg_from_7[i:i,1:1]; price_reg_from_8[i:i,1:1];price_reg_from_9[i:i,1:1]; price_reg_from_10[i:i,1:1]],
- lambda_Ip[i:i,:], lambda_Im[i:i,:]) for i in 1:2048]
+ lambda_Ip[i:i,:], lambda_Im[i:i,:]) for i in 1:1024]
 
 # scenarios = [PriceScenarios([price_scenarios_8[i:i,9:12]; price_scenarios_9[i:i,9:12]; price_scenarios_10[i:i,9:12]], [price_scenarios_from_7[i:i,9:12]; price_scenarios_from_8[i:i,9:12];
 # price_scenarios_from_9[i:i,9:12]], [price_reg_to_1[i:i,1:1]; price_reg_to_2[i:i,1:1]; price_reg_to_3[i:i,1:1]], [price_reg_from_1[i:i,1:1]; price_reg_from_2[i:i,1:1]; price_reg_from_3[i:i,1:1]]) for i in 1:8]
@@ -190,32 +189,31 @@ scenarios = [PriceScenarios([price_scenarios_1[i:i,:]; price_scenarios_2[i:i,:];
 
     # stage to scenario partition
     stageid_to_scenpart = [
-        OrderedSet([BitSet(1:2048)]),                      # Stage 1
-        OrderedSet([BitSet(1:1024), BitSet(1025:2048)]),           # Stage 2
-        OrderedSet([BitSet(1:512), BitSet(513:1024), BitSet(1025:1536), BitSet(1537:2048)]),  # Stage 3
-        OrderedSet([BitSet(1:256), BitSet(257:512), BitSet(513:768), BitSet(769:1024),BitSet(1025:1280), BitSet(1281:1536), BitSet(1537:1792), BitSet(1793:2048)]), #stage4
-        OrderedSet([BitSet(1+128*i:128*(1+i)) for i in 0:15]), # stage 5
-        OrderedSet([BitSet(1+64*i:64*(1+i)) for i in 0:31]), # stage 6
-        OrderedSet([BitSet(1+32*i:32*(1+i)) for i in 0:63]), # stage 7
-        OrderedSet([BitSet(1+16*i:16*(1+i)) for i in 0:127]), # stage 8
-        OrderedSet([BitSet(1+8*i:8*(1+i)) for i in 0:255]), # stage 9
-        OrderedSet([BitSet(1+4*i:4*(1+i)) for i in 0:511]), # stage 10
-        OrderedSet([BitSet(1+2*i:2*(1+i)) for i in 0:1023]), # stage 11
-        OrderedSet([BitSet(i) for i in 1:2048]) # stage 12
+        OrderedSet([BitSet(1:1024)]),                      # Stage 1
+        OrderedSet([BitSet(1:512), BitSet(513:1024)]),           # Stage 2
+        OrderedSet([BitSet(1:256), BitSet(257:512), BitSet(513:768), BitSet(769:1024)]), #stage3
+        OrderedSet([BitSet(1+128*i:128*(1+i)) for i in 0:7]), # stage 4
+        OrderedSet([BitSet(1+64*i:64*(1+i)) for i in 0:15]), # stage 5
+        OrderedSet([BitSet(1+32*i:32*(1+i)) for i in 0:31]), # stage 6
+        OrderedSet([BitSet(1+16*i:16*(1+i)) for i in 0:63]), # stage 7
+        OrderedSet([BitSet(1+8*i:8*(1+i)) for i in 0:127]), # stage 8
+        OrderedSet([BitSet(1+4*i:4*(1+i)) for i in 0:255]), # stage 9
+        OrderedSet([BitSet(1+2*i:2*(1+i)) for i in 0:511]), # stage 10
+        OrderedSet([BitSet(i) for i in 1:1024]) # stage 11
     ]
 
     dim_to_subspace = [1:Df*2, Df*2+1:Df*4, Df*4+1:Df*6, Df*6+1:Df*8, Df*8+1:Df*10, Df*10+1:Df*12,
-    Df*12+1:Df*14, Df*14+1:Df*16, Df*16+1:Df*18, Df*18+1:Df*20, Df*20+1:Df*22, Df*22+1:Df*24+Df*5+In*Df*2]
+    Df*12+1:Df*14, Df*14+1:Df*16, Df*16+1:Df*18, Df*18+1:Df*20, Df*20+1:Df*22+Df*5+In*Df*2]
 
-    custom_nscenarios = 2048
-    custom_nstages =12
+    custom_nscenarios = 1024
+    custom_nstages =11
 
-    scenariotree = ScenarioTree(; depth=12, nbranching=2)
+    scenariotree = ScenarioTree(; depth=11, nbranching=2)
 
     pb = Problem(
         scenarios,  # scenarios array
         build_fs_CsEV!,
-        vec((1/2048).*ones(2048)),                  # scenario probabilities
+        vec((1/1024).*ones(1024)),                  # scenario probabilities
         custom_nscenarios,
         custom_nstages,
         dim_to_subspace,

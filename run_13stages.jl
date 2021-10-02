@@ -14,7 +14,7 @@ function main()
     pb = build_simpleexampleEV()
     #
     hist=OrderedDict{Symbol, Any}(
-        :approxsol => zeros(4096,710)
+        :approxsol => zeros(4096,1310)
     )
 
     println("Full problem is:")
@@ -61,7 +61,7 @@ main()
 
 Tf=13
 Df=10
-In = 20 # no. of cars
+In = 50 # no. of cars
 n_scen=4096
 # #
 # # pA_val= zeros(n_scen,Tf*Df);
@@ -198,3 +198,24 @@ end
 
 display(plt_SoC)
 display(plt_p_ch)
+
+
+pU = Dict()
+pD = Dict()
+for i in 1:10
+    pU[i] = pU_async[:, i:Df:end]
+    # display(bar(mean(pA[i], dims=1)', title="pA DP $i"))
+    pD[i] = pD_async[:, i:Df:end]
+    # display(bar(mean(pB[i], dims=1)', title="pB DP $i"))
+end
+lambda_f=0.5
+
+cost=(1/4096)*(sum(sum(price_scen_from[1][1:4096,1:13]*pB[1]'+price_scen_from[2][1:4096,1:13]*pB[2]'+price_scen_from[3][1:4096,1:13]*pB[3]'+price_scen_from[4][1:4096,1:13]*pB[4]'
++price_scen_from[5][1:4096,1:13]*pB[5]'+price_scen_from[6][1:4096,1:13]*pB[6]'+
+price_scen_from[7][1:4096,1:13]*pB[7]'+price_scen_from[8][1:4096,1:13]*pB[8]'+price_scen_from[9]*pB[9]'+price_scen_from[10]*pB[10]'))-sum(sum(price_scen_to[1]*pA[1]'+price_scen_to[2]*pA[2]'+price_scen_to[3]*pA[3]'
++price_scen_to[4]*pA[4]'+price_scen_to[5]*pA[5]'+price_scen_to[6]*pA[6]'+price_scen_to[7]*pA[7]'+price_scen_to[8]*pA[8]'+price_scen_to[9]*pA[9]'+price_scen_to[10]*pA[10]'))+
++sum(sum(price_reg_from[1]*pD[1]'+ price_reg_from[2]*pD[2]'+ price_reg_from[3]*pD[3]'+ price_reg_from[4]*pD[4]'+price_reg_from[5]*pD[5]'+price_reg_from[6]*pD[6]'+price_reg_from[7]*pD[7]'+
+price_reg_from[8]*pD[8]'+price_reg_from[9]*pD[9]'+price_reg_from[10]*pD[10]'-(price_reg_to[1]*pU[1]'+ price_reg_to[2]*pU[2]'+ price_reg_to[3]*pU[3]'+ price_reg_to[4]*pU[4]'+price_reg_to[5]*pU[5]'+price_reg_to[6]*pU[6]'+price_reg_to[7]*pU[7]'+
+price_reg_to[8]*pU[8]'+price_reg_to[9]*pU[9]'+price_reg_to[10]*pU[10]') + lambda_Im_14*pIm_async' - lambda_Ip_14*pIp_async')))+(1/4096)*sum((pIp_async + pIm_async).*lambda_f)
+
+display(cost)
