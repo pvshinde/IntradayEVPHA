@@ -18,7 +18,7 @@ end
     # Tf = [3, 4, 5] # no. of stages, different for different DPs
     Tf = 14
     Df = 10 # no. of time slots (Delivery products)
-    In = 20 # no. of cars
+    In = 50 # no. of cars
 
     Pmax = 20 #maximal charging rate
     SoCmax = 60 #upper limit of soc of car i
@@ -159,7 +159,7 @@ function build_simpleexampleEV()
     ## Problem definition
     Tf = 14 # no. of stages
     Df = 10 # no. of time slots (Delivery products)
-    In = 20 # no. of cars
+    In = 50 # no. of cars
 
 #assuming three ID stages will correspond to 4 scenarios if nbranching=2, one BM stage
 

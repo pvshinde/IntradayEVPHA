@@ -30,16 +30,16 @@ function main()
     #
     # #########################################################
     ## Problem solve: classical PH algo, as in Ruszczynski book, p. 203
-    global y_PH = solve_progressivehedging(pb, maxtime=500, printstep=10, hist=hist)
-    println("\nSequential solve output is:")
-    display(y_PH)
-    println("")
-
-    # # #########################################################
-    # Problem solve: synchronous (un parallelized) version of PH
-    global y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
-    println("\nSynchronous solve output is:")
-    display(y_sync)
+    # global y_PH = solve_progressivehedging(pb, maxtime=500, printstep=10, hist=hist)
+    # println("\nSequential solve output is:")
+    # display(y_PH)
+    # println("")
+    #
+    # # # #########################################################
+    # # Problem solve: synchronous (un parallelized) version of PH
+    # global y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
+    # println("\nSynchronous solve output is:")
+    # display(y_sync)
 
     #########################################################
     # Problem solve: synchronous (parallelized) version of PH
