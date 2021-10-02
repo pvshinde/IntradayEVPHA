@@ -29,40 +29,46 @@ function main()
     #
     #
     # #########################################################
-    # ## Problem solve: classical PH algo, as in Ruszczynski book, p. 203
-    # global y_PH = solve_progressivehedging(pb, maxtime=500, printstep=10, hist=hist)
-    # println("\nSequential solve output is:")
-    # display(y_PH)
-    # println("")
-    #
-    # # # #########################################################
-    # # Problem solve: synchronous (un parallelized) version of PH
-    # global y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
-    # println("\nSynchronous solve output is:")
-    # display(y_sync)
-    #
-    # #########################################################
-    # # Problem solve: synchronous (parallelized) version of PH
-    # global y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
-    # println("\nRandom Par solve output is:")
-    # display(y_par)
+    ## Problem solve: classical PH algo, as in Ruszczynski book, p. 203
+    global y_PH = solve_progressivehedging(pb, maxtime=500, printstep=10, hist=hist)
+    println("\nSequential solve output is:")
+    display(y_PH)
+    println("")
+
+    # # #########################################################
+    # Problem solve: synchronous (un parallelized) version of PH
+    global y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
+    println("\nSynchronous solve output is:")
+    display(y_sync)
+
+    #########################################################
+    # Problem solve: synchronous (parallelized) version of PH
+    global y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
+    println("\nRandom Par solve output is:")
+    display(y_par)
 
 
     #########################################################
     ## Problem solve: asynchronous (parallelized) version of PH
-    global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
-    println("Asynchronous solve output is:")
-    display(y_async)
+    # global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist)
+    # println("Asynchronous solve output is:")
+    # display(y_async)
 
     return
 end
 
 main()
 
-Tf=13
-Df=10
-In = 50 # no. of cars
-n_scen=4096
+    @show norm(y_sync - y_PH)
+    @show norm(y_sync - y_par)
+    @show norm(y_sync - y_async)
+
+
+#
+# Tf=13
+# Df=10
+# In = 50 # no. of cars
+# n_scen=4096
 # #
 # # pA_val= zeros(n_scen,Tf*Df);
 # # pB_val= zeros(n_scen,Tf*Df);
@@ -144,83 +150,83 @@ n_scen=4096
 # # p_ch_par=y_par[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
 # # SoC_par=y_par[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
 #
-pA_async= zeros(n_scen,Tf*Df);
-pB_async= zeros(n_scen,Tf*Df);
-pU_async= zeros(n_scen,Df);
-pD_async= zeros(n_scen,Df);
-pC_async= zeros(n_scen,Df);
-pIp_async= zeros(n_scen,Df);
-pIm_async= zeros(n_scen,Df);
-p_ch_async=zeros(In*Df);
-SoC_async=zeros(In*Df);
-
-pA_async= y_async[:,1:Tf*Df];
-pB_async= y_async[:,Tf*Df+1:Tf*Df*2];
-pU_async= y_async[:,Tf*Df*2+1:Tf*Df*2+Df];
-pD_async= y_async[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
-pC_async= y_async[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
-pIp_async= y_async[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
-pIm_async= y_async[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
-p_ch_async=y_async[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
-SoC_async=y_async[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
-
-# # plots
-# plotly()
-
-pA = Dict()
-pB = Dict()
-for i in 1:10
-    pA[i] = pA_async[:, i:Df:end]
-    display(bar(mean(pA[i], dims=1)', title="pA DP $i"))
-    pB[i] = pB_async[:, i:Df:end]
-    display(bar(mean(pB[i], dims=1)', title="pB DP $i"))
-end
-
-display(bar(mean(pU_async, dims=1)', title="pU DPs"))
-display(bar(mean(pD_async, dims=1)', title="pD DPs"))
-
-display(plot(mean(pC_async, dims=1)', title="pC DPs"))
-display(plot(mean(pIm_async, dims=1)', title="pIm DPs"))
-display(plot(mean(pIp_async, dims=1)', title="pIp DPs"))
-
-p_ch = Dict()
-SoC = Dict()
-plt_SoC = plot()
-plt_p_ch = plot()
-for i in 1:10
-    p_ch[i] = p_ch_async[:, i:In:end]
-    # display(plot(mean(p_ch[i], dims=1)', title="p_ch EV $i"))
-    SoC[i] = SoC_async[:, i:In:end]
-    # display(plot(mean(SoC[i], dims=1)', title="SoC EV $i"))
-    plot!(plt_SoC, mean(SoC[i], dims=1)', label="SoC $i")
-    plot!(plt_p_ch, mean(p_ch[i], dims=1)', label="p_ch $i")
-end
-
-display(plt_SoC)
-display(plt_p_ch)
-
-
-pU = Dict()
-pD = Dict()
-for i in 1:10
-    pU[i] = pU_async[:, i:Df:end]
-    # display(bar(mean(pA[i], dims=1)', title="pA DP $i"))
-    pD[i] = pD_async[:, i:Df:end]
-    # display(bar(mean(pB[i], dims=1)', title="pB DP $i"))
-end
-lambda_f=0.5
-
-cost=(1/4096)*(sum(sum(price_scen_from[1][1:4096,1:13]*pB[1]'+price_scen_from[2][1:4096,1:13]*pB[2]'+price_scen_from[3][1:4096,1:13]*pB[3]'+price_scen_from[4][1:4096,1:13]*pB[4]'
-+price_scen_from[5][1:4096,1:13]*pB[5]'+price_scen_from[6][1:4096,1:13]*pB[6]'+
-price_scen_from[7][1:4096,1:13]*pB[7]'+price_scen_from[8][1:4096,1:13]*pB[8]'+price_scen_from[9][1:4096,1:13]*pB[9]'+price_scen_from[10][1:4096,1:13]*pB[10]'))-sum(sum(price_scen_to[1][1:4096,1:13]*pA[1]'
-+price_scen_to[2][1:4096,1:13]*pA[2]'+price_scen_to[3][1:4096,1:13]*pA[3]'
-+price_scen_to[4][1:4096,1:13]*pA[4]'+price_scen_to[5][1:4096,1:13]*pA[5]'+price_scen_to[6][1:4096,1:13]*pA[6]'+price_scen_to[7][1:4096,1:13]*pA[7]'+price_scen_to[8][1:4096,1:13]*pA[8]'
-+price_scen_to[9][1:4096,1:13]*pA[9]'+price_scen_to[10][1:4096,1:13]*pA[10]'))+
-+sum(sum(price_reg_from[1][1:4096,:]*pD[1]'+ price_reg_from[2][1:4096,:]*pD[2]'+ price_reg_from[3][1:4096,:]*pD[3]'+ price_reg_from[4][1:4096,:]*pD[4]'+price_reg_from[5][1:4096,:]*pD[5]'+
-price_reg_from[6][1:4096,:]*pD[6]'+price_reg_from[7][1:4096,:]*pD[7]'+
-price_reg_from[8][1:4096,:]*pD[8]'+price_reg_from[9][1:4096,:]*pD[9]'+price_reg_from[10][1:4096,:]*pD[10]'-(price_reg_to[1][1:4096,:]*pU[1]'+ price_reg_to[2][1:4096,:]*pU[2]'+ price_reg_to[3][1:4096,:]*pU[3]'
-+ price_reg_to[4][1:4096,:]*pU[4]'+price_reg_to[5][1:4096,:]*pU[5]'
-+price_reg_to[6][1:4096,:]*pU[6]'+price_reg_to[7][1:4096,:]*pU[7]'+
-price_reg_to[8][1:4096,:]*pU[8]'+price_reg_to[9][1:4096,:]*pU[9]'+price_reg_to[10][1:4096,:]*pU[10]') + lambda_Im_14[1:4096,:]*pIm_async' - lambda_Ip_14[1:4096,:]*pIp_async')))+(1/4096)*sum((pIp_async + pIm_async).*lambda_f)
-
-display(cost)
+# pA_async= zeros(n_scen,Tf*Df);
+# pB_async= zeros(n_scen,Tf*Df);
+# pU_async= zeros(n_scen,Df);
+# pD_async= zeros(n_scen,Df);
+# pC_async= zeros(n_scen,Df);
+# pIp_async= zeros(n_scen,Df);
+# pIm_async= zeros(n_scen,Df);
+# p_ch_async=zeros(In*Df);
+# SoC_async=zeros(In*Df);
+#
+# pA_async= y_async[:,1:Tf*Df];
+# pB_async= y_async[:,Tf*Df+1:Tf*Df*2];
+# pU_async= y_async[:,Tf*Df*2+1:Tf*Df*2+Df];
+# pD_async= y_async[:,Tf*Df*2+Df+1:Tf*Df*2+2*Df];
+# pC_async= y_async[:,Tf*Df*2+2*Df+1:Tf*Df*2+3*Df];
+# pIp_async= y_async[:,Tf*Df*2+3*Df+1:Tf*Df*2+4*Df];
+# pIm_async= y_async[:,Tf*Df*2+4*Df+1:Tf*Df*2+5*Df];
+# p_ch_async=y_async[:,Tf*Df*2+5*Df+1:Tf*Df*2+5*Df+In*Df];
+# SoC_async=y_async[:,Tf*Df*2+5*Df+In*Df+1:Tf*Df*2+5*Df+In*Df*2];
+#
+# # # plots
+# # plotly()
+#
+# pA = Dict()
+# pB = Dict()
+# for i in 1:10
+#     pA[i] = pA_async[:, i:Df:end]
+#     display(bar(mean(pA[i], dims=1)', title="pA DP $i"))
+#     pB[i] = pB_async[:, i:Df:end]
+#     display(bar(mean(pB[i], dims=1)', title="pB DP $i"))
+# end
+#
+# display(bar(mean(pU_async, dims=1)', title="pU DPs"))
+# display(bar(mean(pD_async, dims=1)', title="pD DPs"))
+#
+# display(plot(mean(pC_async, dims=1)', title="pC DPs"))
+# display(plot(mean(pIm_async, dims=1)', title="pIm DPs"))
+# display(plot(mean(pIp_async, dims=1)', title="pIp DPs"))
+#
+# p_ch = Dict()
+# SoC = Dict()
+# plt_SoC = plot()
+# plt_p_ch = plot()
+# for i in 1:10
+#     p_ch[i] = p_ch_async[:, i:In:end]
+#     # display(plot(mean(p_ch[i], dims=1)', title="p_ch EV $i"))
+#     SoC[i] = SoC_async[:, i:In:end]
+#     # display(plot(mean(SoC[i], dims=1)', title="SoC EV $i"))
+#     plot!(plt_SoC, mean(SoC[i], dims=1)', label="SoC $i")
+#     plot!(plt_p_ch, mean(p_ch[i], dims=1)', label="p_ch $i")
+# end
+#
+# display(plt_SoC)
+# display(plt_p_ch)
+#
+#
+# pU = Dict()
+# pD = Dict()
+# for i in 1:10
+#     pU[i] = pU_async[:, i:Df:end]
+#     # display(bar(mean(pA[i], dims=1)', title="pA DP $i"))
+#     pD[i] = pD_async[:, i:Df:end]
+#     # display(bar(mean(pB[i], dims=1)', title="pB DP $i"))
+# end
+# lambda_f=0.5
+#
+# cost=(1/4096)*(sum(sum(price_scen_from[1][1:4096,1:13]*pB[1]'+price_scen_from[2][1:4096,1:13]*pB[2]'+price_scen_from[3][1:4096,1:13]*pB[3]'+price_scen_from[4][1:4096,1:13]*pB[4]'
+# +price_scen_from[5][1:4096,1:13]*pB[5]'+price_scen_from[6][1:4096,1:13]*pB[6]'+
+# price_scen_from[7][1:4096,1:13]*pB[7]'+price_scen_from[8][1:4096,1:13]*pB[8]'+price_scen_from[9][1:4096,1:13]*pB[9]'+price_scen_from[10][1:4096,1:13]*pB[10]'))-sum(sum(price_scen_to[1][1:4096,1:13]*pA[1]'
+# +price_scen_to[2][1:4096,1:13]*pA[2]'+price_scen_to[3][1:4096,1:13]*pA[3]'
+# +price_scen_to[4][1:4096,1:13]*pA[4]'+price_scen_to[5][1:4096,1:13]*pA[5]'+price_scen_to[6][1:4096,1:13]*pA[6]'+price_scen_to[7][1:4096,1:13]*pA[7]'+price_scen_to[8][1:4096,1:13]*pA[8]'
+# +price_scen_to[9][1:4096,1:13]*pA[9]'+price_scen_to[10][1:4096,1:13]*pA[10]'))+
+# +sum(sum(price_reg_from[1][1:4096,:]*pD[1]'+ price_reg_from[2][1:4096,:]*pD[2]'+ price_reg_from[3][1:4096,:]*pD[3]'+ price_reg_from[4][1:4096,:]*pD[4]'+price_reg_from[5][1:4096,:]*pD[5]'+
+# price_reg_from[6][1:4096,:]*pD[6]'+price_reg_from[7][1:4096,:]*pD[7]'+
+# price_reg_from[8][1:4096,:]*pD[8]'+price_reg_from[9][1:4096,:]*pD[9]'+price_reg_from[10][1:4096,:]*pD[10]'-(price_reg_to[1][1:4096,:]*pU[1]'+ price_reg_to[2][1:4096,:]*pU[2]'+ price_reg_to[3][1:4096,:]*pU[3]'
+# + price_reg_to[4][1:4096,:]*pU[4]'+price_reg_to[5][1:4096,:]*pU[5]'
+# +price_reg_to[6][1:4096,:]*pU[6]'+price_reg_to[7][1:4096,:]*pU[7]'+
+# price_reg_to[8][1:4096,:]*pU[8]'+price_reg_to[9][1:4096,:]*pU[9]'+price_reg_to[10][1:4096,:]*pU[10]') + lambda_Im_14[1:4096,:]*pIm_async' - lambda_Ip_14[1:4096,:]*pIp_async')))+(1/4096)*sum((pIp_async + pIm_async).*lambda_f)
+#
+# display(cost)
