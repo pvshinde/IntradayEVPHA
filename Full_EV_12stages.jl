@@ -29,26 +29,6 @@ end
     alpha = 0.9 #charging efficiency
     lambda_f = 0.5 #imbalance fee
     delta_d = 1 #time step
-    # Q = ones(Mn, Nf) #reserved battery level of reservation m in cluster n scenario w (3D)
-    #
-    # Q = [30, 33, 34, 20, 25, 28, 28, 34, 28, 30] # charging requirement per EV
-    # SoC_init = [20, 12, 14, 15, 15, 15, 17, 17, 20, 20] # initial SOC for each EV when it arrives
-    # d0 = [2, 3, 1, 2, 3, 2, 1, 1, 2, 1] # time of arrival of each EV
-    # DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
-    #
-    # Q = [30, 33, 34, 20, 25, 28, 28, 34, 28, 30, 30, 33, 34, 20, 25, 28, 28, 34, 28, 30] # charging requirement per EV
-    # SoC_init = [20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20] # initial SOC for each EV when it arrives
-    # d0 = [2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1] # time of arrival of each EV
-    # DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
-# data for 12 stages run on Friday 16:30
-    # Q = [30, 33, 34, 20, 25, 28, 28, 34, 28, 30, 30, 33, 34, 20, 25, 28, 28, 34, 28, 30,
-    # 30, 33, 34, 20, 25, 28, 28, 34, 28, 30,30, 33, 34, 20, 25, 28, 28, 34, 28, 30, 30, 33, 34, 20, 25, 28, 28, 34, 28, 30] # charging requirement per EV
-    # SoC_init = [20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20,
-    # 20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20, 20, 12, 14, 15, 15, 15, 17, 17, 20, 20] # initial SOC for each EV when it arrives
-    # d0 = [2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1,
-    # 2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1,2, 3, 1, 2, 3, 2, 1, 1, 2, 1] # time of arrival of each EV
-    # DD = [8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10,
-    # 8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10,8, 9, 10, 7, 8, 9, 10, 8, 7, 10] # time of departure of each EV
 
     Q = [30, 13, 34, 20, 25, 18, 18, 10, 18, 30, 10, 33, 14, 20, 25, 28, 28, 34, 28, 30,
     30, 11, 14, 20, 25, 28, 28, 34, 28, 10,30, 22, 34, 20, 25, 28, 28, 14, 18, 12, 16, 11, 34, 20, 25, 28, 28, 14, 18, 10] # charging requirement per EV
@@ -89,10 +69,7 @@ end
     @constraint(model, pD .>= 0)
     @constraint(model, pIp .>= 0)
     @constraint(model, pIm .>= 0)
-    #
-    # objexpr = sum(sum(pB[d, t]*s.ID_buy_price[d,t] - pA[d, t]*s.ID_ask_price[d,t] for t in Tf) for d in Df)
-    #             + sum(pD[d] * s.Dn_price[d] - pU[d] * s.Up_price[d] + pIm[d]*s.Im_price[d] - pIp[d]*s.Ip_price[d] +
-    #             (pIp[d] + pIm[d]) * lambda_f for d in Df)
+    
     objexpr = sum(sum(pB[d, t]*s.ID_buy_price[d,t] - pA[d, t]*s.ID_ask_price[d,t] for t in Tf) for d in Df)
                 + sum(pD[d] * s.Dn_price[d] - pU[d] * s.Up_price[d] + pIm[d]*s.Im_price[d] - pIp[d]*s.Ip_price[d] +
                 (pIp[d] + pIm[d]) * lambda_f for d in Df)

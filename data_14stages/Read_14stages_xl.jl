@@ -5,7 +5,7 @@ using XLSX
 
 price_scen_to = Dict()
 for i in 1:10
-    table_1=XLSX.readxlsx("data_price_to\\price_to_$i.xlsx")
+    table_1=XLSX.readxlsx("price_to_$i.xlsx")
     sh1=table_1["Sheet1"]
     price_scenarios_to=sh1["B2:O8193"]
     price_scen_to[i]=convert(Array{Float64,2},price_scenarios_to)
@@ -13,7 +13,7 @@ end
 
 price_scen_from = Dict()
 for i in 1:10
-    table_2=XLSX.readxlsx("data_price_from\\price_from_$i.xlsx")
+    table_2=XLSX.readxlsx("price_from_$i.xlsx")
     sh2=table_2["Sheet1"]
     price_scenarios_from=sh2["B2:O8193"]
     price_scen_from[i]=convert(Array{Float64,2},price_scenarios_from)
@@ -21,7 +21,7 @@ end
 
 price_reg_to = Dict()
 for i in 1:10
-    table3=XLSX.readxlsx("data_reg_price_to\\reg_price_to_$i.xlsx")
+    table3=XLSX.readxlsx("reg_price_to_$i.xlsx")
     sh3=table3["Sheet1"]
     price_scen_reg_to=sh3["B2:B8193"]
     price_reg_to[i]=convert(Array{Float64,2},price_scen_reg_to)
@@ -29,9 +29,9 @@ end
 
 price_reg_from = Dict()
 for i in 1:10
-    table2=XLSX.readxlsx("data_reg_price_from\\reg_price_from_$i.xlsx")
-    sh4=table2["Sheet1"]
-    price_scen_reg_from=sh4["B2:B8193"]
+    table2=XLSX.readxlsx("reg_price_from_$i.xlsx")
+    sh2=table2["Sheet1"]
+    price_scen_reg_from=sh2["B2:B8193"]
     price_reg_from[i]=convert(Array{Float64,2},price_scen_reg_from)
 end
 

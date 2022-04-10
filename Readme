@@ -3,4 +3,13 @@ Read me
 For running the 12 stages version, first run the Read_xl_data.jl code to load the data
 Then run the run_simple_EV.jl and it will call Full_EV_version.jl
 
+For 11 stages: run the code run_11_stages.jl which will call Full_EV_11stages.jl
+
+Run Read_14stages.jl code for reading the price data and then run the code run_14stages_EV.jl
+13 stages: run the code run_13_stages.jl
+
 DA_BM_EV.jl is the benchmark case with only DA and BM and without PHA
+
+Use Julia version 1.3 to be able to run RandomizedProgressiveHedging package which is internally called through the provided codes.
+
+The simulations are performed for 10 delivery products. Therefore, 10 xlsx files are provided for price data.

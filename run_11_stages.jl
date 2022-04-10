@@ -3,68 +3,63 @@ using Statistics
 
 @everywhere using JuMP, RandomizedProgressiveHedging
 
-
-# include("simple_trialEV.jl")
-# include("Simplified_EV.jl")
-# include("Automated_pricesEV.jl")
-# include("build_priceEV.jl")
-# include("Full_EV_11stages.jl")
+include("Full_EV_11stages.jl")
 using Ipopt
 using Plots
 #
-# function main()
-#     pb = build_simpleexampleEV()
-#
-#     hist=OrderedDict{Symbol, Any}(
-#         :approxsol => zeros(1024,1270)
-#     )
-#
-#     println("Full problem is:")
-#     println(pb)
-#
-#     #########################################################
-#     ## Problem solve: build and solve complete problem, exponential in constraints
-#     # global y_direct = solve_direct(pb, optimizer = Ipopt.Optimizer)
-#     # println("\nDirect solve output is:")
-#     # display(y_direct)
-#     # println("")
-#
-#
-#     #########################################################
-#     # Problem solve: classical PH algo, as in Ruszczynski book, p. 203
-#     global y_PH = solve_progressivehedging(pb, maxtime=500, printstep=10, hist=hist)
-#     println("\nSequential solve output is:")
-#     display(y_PH)
-#     println("")
-#
-#     # #########################################################
-#     # Problem solve: synchronous (un parallelized) version of PH
-#     global y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
-#     println("\nSynchronous solve output is:")
-#     display(y_sync)
-#
-#     #########################################################
-#     # Problem solve: synchronous (parallelized) version of PH
-#     global y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
-#     println("\nRandom Par solve output is:")
-#     display(y_par)
-#
-#
-#     # ########################################################
-#     # Problem solve: asynchronous (parallelized) version of PH
-#     global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist, qdistr=:unifdistr)
-#     println("Asynchronous solve output is:")
-#     display(y_async)
-#     #
-#     # @show norm(y_sync - y_PH)
-#     # @show norm(y_sync - y_par)
-#     # @show norm(y_sync - y_async)
-#
-#     return
-# end
-#
-# main()
-#
+function main()
+    pb = build_simpleexampleEV()
+
+    hist=OrderedDict{Symbol, Any}(
+        :approxsol => zeros(1024,1270)
+    )
+
+    println("Full problem is:")
+    println(pb)
+
+    #########################################################
+    ## Problem solve: build and solve complete problem, exponential in constraints
+    # global y_direct = solve_direct(pb, optimizer = Ipopt.Optimizer)
+    # println("\nDirect solve output is:")
+    # display(y_direct)
+    # println("")
+
+
+    #########################################################
+    # Problem solve: classical PH algo, as in Ruszczynski book, p. 203
+    global y_PH = solve_progressivehedging(pb, maxtime=500, printstep=10, hist=hist)
+    println("\nSequential solve output is:")
+    display(y_PH)
+    println("")
+
+    # #########################################################
+    # Problem solve: synchronous (un parallelized) version of PH
+    global y_sync = solve_randomized_sync(pb, maxtime=5, printstep=3*3, hist=hist)
+    println("\nSynchronous solve output is:")
+    display(y_sync)
+
+    #########################################################
+    # Problem solve: synchronous (parallelized) version of PH
+    global y_par = solve_randomized_par(pb, maxtime=5, printstep=3, hist=hist)
+    println("\nRandom Par solve output is:")
+    display(y_par)
+
+
+    # ########################################################
+    # Problem solve: asynchronous (parallelized) version of PH
+    global y_async = solve_randomized_async(pb, maxtime=5, printstep=3*3, hist=hist, qdistr=:unifdistr)
+    println("Asynchronous solve output is:")
+    display(y_async)
+    #
+    # @show norm(y_sync - y_PH)
+    # @show norm(y_sync - y_par)
+    # @show norm(y_sync - y_async)
+
+    return
+end
+
+main()
+
 
 
 Tf=11

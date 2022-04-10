@@ -3,9 +3,6 @@ using Statistics
 
 @everywhere using JuMP, RandomizedProgressiveHedging
 
-# include("simple_trialEV.jl")
-# include("Simplified_EV.jl")
-# include("Automated_pricesEV.jl")
 include("Full_EV_13stages.jl")
 using Ipopt
 using Plots
