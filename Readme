@@ -1,4 +1,6 @@
 Read me
 
-For running the12 stages version, first run the Read_xl_data.jl code to load the data
+For running the 12 stages version, first run the Read_xl_data.jl code to load the data
 Then run the run_simple_EV.jl and it will call Full_EV_version.jl
+
+DA_BM_EV.jl is the benchmark case with only DA and BM and without PHA

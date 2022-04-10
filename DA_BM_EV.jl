@@ -14,7 +14,7 @@ model = Model(with_optimizer(GLPK.Optimizer))
     Tf = 14
     Df = 10 # no. of time slots (Delivery products)
     In = 50 # no. of cars
-    Wf= 2048
+    Wf= 100
 
     Pmax = 10 #maximal charging rate
     SoCmax = 40 #upper limit of soc of car i
@@ -62,12 +62,12 @@ model = Model(with_optimizer(GLPK.Optimizer))
 # price_to is SE3 buying
 #price_from is SE3 selling a up
 
-price_reg_D=zeros(2048,10)
-price_regD=hcat(price_reg_to_1, price_reg_to_2, price_reg_to_3,price_reg_to_4, price_reg_to_5, price_reg_to_6,price_reg_to_7,
-price_reg_to_8, price_reg_to_9,price_reg_to_10)
-price_reg_U=zeros(2048,10)
-price_regD=hcat(price_reg_from_1, price_reg_from_2, price_reg_from_3,price_reg_from_4,price_reg_from_5,price_reg_from_6,price_reg_from_7,
-price_reg_from_8, price_reg_from_9,price_reg_from_10)
+price_reg_D=zeros(100,10)
+price_reg_D=hcat(price_reg_to_1[1:100,:], price_reg_to_2[1:100,:], price_reg_to_3[1:100,:],price_reg_to_4[1:100,:], price_reg_to_5[1:100,:], price_reg_to_6[1:100,:],price_reg_to_7[1:100,:],
+price_reg_to_8[1:100,:], price_reg_to_9[1:100,:],price_reg_to_10[1:100,:])
+price_reg_U=zeros(100,10)
+price_reg_U=hcat(price_reg_from_1[1:100,:], price_reg_from_2[1:100,:], price_reg_from_3[1:100,:],price_reg_from_4[1:100,:],price_reg_from_5[1:100,:],price_reg_from_6[1:100,:],price_reg_from_7[1:100,:],
+price_reg_from_8[1:100,:], price_reg_from_9[1:100,:],price_reg_from_10[1:100,:])
 
 # price_regD=hcat(price_reg_from[1], price_reg_from[2], price_reg_from[3],price_reg_from[4],price_reg_from[5],price_reg_from[6],price_reg_from[7],
 # price_reg_from[8], price_reg_from[9],price_reg_from[10])
@@ -127,13 +127,21 @@ end
     # objexpr = (1/8192)*(sum(pD[w,d]*price_reg_D[w,d] - pU[w,d] *price_reg_U[w,d]  + pIm[w,d]*lambda_Im_14[w,d] - pIp[w,d]*lambda_Ip_14[w,d] +
     #             (pIp[w,d] + pIm[w,d]) * lambda_f for d in Df))
 
-@objective(model,Min,sum(sum(pD[w,d]*price_reg_D[w,d] - pU[w,d] *price_reg_U[w,d]  + pIm[w,d]*lambda_Im[w,d] - pIp[w,d]*lambda_Ip[w,d] +
+@objective(model,Min,(1/100)*sum(sum(pD[w,d]*price_reg_D[w,d] - pU[w,d] *price_reg_U[w,d]  + pIm[w,d]*lambda_Im[w,d] - pIp[w,d]*lambda_Ip[w,d] +
             (pIp[w,d] + pIm[w,d]) * lambda_f for d in Df) for w in Wf))
 
     # print(model)
     # print(JuMP.value.(pA))
 optimize!(model)
 
+cost=(1/100)*sum(sum( JuMP.value.(pD[w,d])*price_reg_D[w,d] -  JuMP.value.(pU[w,d]) *price_reg_U[w,d]  +
+JuMP.value.(pIm[w,d])*lambda_Im[w,d] - JuMP.value.(pIp[w,d])*lambda_Ip[w,d] +(JuMP.value.(pIp[w,d]) +
+ JuMP.value.(pIm[w,d])) * lambda_f for d in Df) for w in Wf)
+display(cost)
+pUp=JuMP.value.(pU)
+pDn=JuMP.value.(pD)
+pImb=JuMP.value.(pIm)
+pIpb=JuMP.value.(pIp)
         #########################################################
     ## Problem definition
 #     Tf = 14 # no. of stages
