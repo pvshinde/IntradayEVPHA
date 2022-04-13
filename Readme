@@ -1,3 +1,5 @@
+A Modified Progressive Hedging Approach for Multistage Intraday Trade of EV Aggregators
+
 Read me
 
 For running the 12 stages version, first run the Read_xl_data.jl code to load the data
